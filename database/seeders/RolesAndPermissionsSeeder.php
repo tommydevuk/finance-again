@@ -21,7 +21,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'platform',
             'account',
             'transaction',
-            'permission', // Managing permissions themselves
+            'permission',
+            'user',
         ];
 
         $actions = ['viewAny', 'view', 'create', 'update', 'delete'];
