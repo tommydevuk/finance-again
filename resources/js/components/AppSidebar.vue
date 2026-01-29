@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, ShieldCheck } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid, ShieldCheck, Settings2 } from 'lucide-vue-next';
+import { computed } from 'vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
@@ -14,27 +15,32 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
+import system from '@/routes/system';
 import { type NavItem } from '@/types';
 import AppLogo from './AppLogo.vue';
-import { computed } from 'vue';
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
+const can = computed(() => page.props.auth.can);
 
 const mainNavItems = computed<NavItem[]>(() => {
     const items = [
         {
             title: 'Dashboard',
-            href: dashboard(),
-            icon: LayoutGrid,
+            href: dashboard().url,
         },
     ];
 
-    if (user.value?.roles?.some(role => role.name === 'Super Admin')) {
+    if (can.value?.viewSystemDashboard) {
         items.push({
             title: 'System',
-            href: '/system',
+            href: system.dashboard.url(),
             icon: ShieldCheck,
+        });
+        items.push({
+            title: 'Roles',
+            href: system.roles.index.url(),
+            icon: Settings2,
         });
     }
 

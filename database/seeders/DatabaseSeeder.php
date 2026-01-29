@@ -35,9 +35,20 @@ class DatabaseSeeder extends Seeder
             'user_id' => $user2->id,
         ]);
 
-        // Assign Super Admin role scoped to the System Entity
+        // Create Super Admin role scoped to System entity
+        $superAdminRole = \Spatie\Permission\Models\Role::create([
+            'name' => \App\Enums\RolesEnum::SUPER_ADMIN->value,
+            'guard_name' => 'web',
+            'entity_id' => $systemEntity->id,
+        ]);
+
+        // Assign all permissions to Super Admin
+        $superAdminRole->syncPermissions(\Spatie\Permission\Models\Permission::all());
+
+        // Assign Super Admin role to user 2 in the System entity context
         setPermissionsTeamId($systemEntity->id);
-        $user2->assignRole('Super Admin');
+        $user2->assignRole($superAdminRole);
+        setPermissionsTeamId(null); // Reset team context
 
         $this->call([
             EntitySeeder::class,

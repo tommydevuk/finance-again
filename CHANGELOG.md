@@ -9,16 +9,6 @@ This file tracks all changes made to the project based on user requests.
 - Created `CurrencySeeder` to populate major fiat (USD, EUR, etc.) and crypto (BTC, ETH, etc.) currencies.
 - Created `NetworkSeeder` to populate major blockchain networks (Bitcoin, Ethereum, BSC, etc.).
 - Updated `DatabaseSeeder` to include the new seeders.
-- **[Feature: User Role Assignment CLI]**
-    - Optimized Request: Create a CLI command to assign roles to users by ID, restricted to local development, with flags to skip confirmation prompts.
-    - Implemented: Created `app/Console/Commands/AssignRoleToUser.php` providing `user:assign-role {user_id} {role_name} {entity_id?}`.
-    - Implemented: Added environment check to restrict execution to `local`.
-    - Implemented: Added `--force` (or `-F`) flag to bypass interaction.
-- **[Feature: System Entity]**
-    - Optimized Request: Add a "System" entity via seeder and update the role assignment command to automatically use it as a default permissions boundary.
-    - Implemented: Created `EntitySeeder` to generate a default "System" entity (`slug: system`).
-    - Implemented: Updated `DatabaseSeeder` to include `EntitySeeder`.
-    - Implemented: Updated `user:assign-role` command to automatically resolve and use the "System" entity ID if `config('permission.teams')` is active and no `entity_id` is provided.
 - **[Feature: Schema Hardening]**
     - Optimized Request: Improve schema robustness for crypto applications by increasing precision, adding metadata flexibility, and optimizing query performance.
     - Implemented: Updated `transactions` and `accounts` tables to use `decimal(36, 18)` for `amount`, `amount_native`, and `balance` to support high-precision cryptocurrencies (like ETH/Wei).
@@ -44,8 +34,26 @@ This file tracks all changes made to the project based on user requests.
     - Implemented: Created `entities` table (Parent) and `Entity` model.
     - Implemented: Added `entity_id` to `accounts` table.
     - Implemented: Updated Spatie Permission config to use `entity_id` as the Team ID (replacing `account_id`), enabling Entity-level roles.
+    - **[Feature: Roles Management Interface]**
+        - Optimized Request: Create a roles index with tiled layout and separate routed crud screen for editing permissions.
+        - Implemented: Created `System/RoleController` with index, edit, and update actions.
+        - Implemented: Created `System/Roles/Index.vue` with a tiled card layout showing role summaries.
+        - Implemented: Created `System/Roles/EditPermissions.vue` with a grouped grid of checkboxes for intuitive permission management.
+        - Implemented: Added "Roles" navigation to the sidebar and system dashboard.
+- **[Feature: Super Admin & System Dashboard]**
+    - Optimized Request: Create a "Super Admin" role and a system dashboard accessible only to those users.
+    - Implemented: Created `RolesAndPermissionsSeeder` and `RolesEnum` enum.
+    - Implemented: Added `Gate::before` and `viewSystemDashboard` gates in `AppServiceProvider`.
+    - Implemented: Created `SystemController` and `/system` route.
+    - Implemented: Created `System/Dashboard.vue` page and added it to the sidebar for Super Admins.
+    - **[Correction: System Entity]**
+        - Implemented: Reverted Global Role approach in favor of a "System Entity" (Entity with `type='system'`) to house the Super Admin role, ensuring Primary Key integrity in `model_has_roles`.
 
 ### Changed
+- **[Refactor: Role Permissions Edit Page]**
+    - Optimized Request: Ensure data consistency and proper reactivity in the Role Permissions edit component, using IDs for robust identification.
+    - Implemented: Refactored `RoleController` to pass `assigned_permissions` as an array of IDs and validate against IDs.
+    - Implemented: Refactored `EditPermissions.vue` to use permission IDs for state management and checkbox binding.
 - **[Refactor: Transaction Model & Schema]**
     - Optimized Request: Refactor `Transaction` model to use foreign keys (`sender_account_id`, `recipient_account_id`) instead of text fields for data integrity.
     - Implemented: Updated `create_transactions_table` migration to replace `account_id`, `sender_*`, and `recipient_*` text fields with nullable `sender_account_id` and `recipient_account_id` foreign keys referencing `accounts`.

@@ -40,15 +40,5 @@ class RolesAndPermissionsSeeder extends Seeder
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
         }
-
-        // Create Super Admin Role (Global - no team_id)
-        $superAdminRole = Role::firstOrCreate([
-            'name' => 'Super Admin',
-            'guard_name' => 'web',
-            'entity_id' => null, // Global Role
-        ]);
-
-        // Assign all permissions to Super Admin
-        $superAdminRole->syncPermissions(Permission::all());
     }
 }

@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
-import AppLayout from '@/layouts/AppLayout.vue';
-import { type BreadcrumbItem } from '@/types';
+import { Head, Link } from '@inertiajs/vue3';
+import { Settings2 } from 'lucide-vue-next';
 import PlaceholderPattern from '@/components/PlaceholderPattern.vue';
+import { Button } from '@/components/ui/button';
+import AppLayout from '@/layouts/AppLayout.vue';
+import system from '@/routes/system';
+import { type BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'System Dashboard',
-        href: '/system',
+        href: system.dashboard.url(),
     },
 ];
 </script>
@@ -17,8 +20,18 @@ const breadcrumbs: BreadcrumbItem[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 p-4">
-            <h1 class="text-2xl font-bold">System Dashboard</h1>
-            <p class="text-gray-500">Super Admin Access Only</p>
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold">System Dashboard</h1>
+                    <p class="text-gray-500">Super Admin Access Only</p>
+                </div>
+                <Button as-child variant="outline" class="gap-2">
+                    <Link :href="system.roles.index.url()">
+                        <Settings2 class="h-4 w-4" />
+                        Manage Roles
+                    </Link>
+                </Button>
+            </div>
             
             <div class="grid auto-rows-min gap-4 md:grid-cols-3">
                 <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border p-4 bg-sidebar">
@@ -32,6 +45,15 @@ const breadcrumbs: BreadcrumbItem[] = [
                 <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border p-4 bg-sidebar">
                      <h3 class="font-semibold mb-2">Transactions</h3>
                     <div class="text-3xl font-bold">--</div>
+                </div>
+                <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border p-4 bg-sidebar flex flex-col justify-between">
+                     <h3 class="font-semibold mb-2">System Roles</h3>
+                    <div class="flex items-center justify-between">
+                        <div class="text-3xl font-bold">--</div>
+                        <Button variant="ghost" size="sm" as-child>
+                            <Link :href="system.roles.index.url()">View All</Link>
+                        </Button>
+                    </div>
                 </div>
             </div>
             
