@@ -9,6 +9,16 @@ This file tracks all changes made to the project based on user requests.
 - Created `CurrencySeeder` to populate major fiat (USD, EUR, etc.) and crypto (BTC, ETH, etc.) currencies.
 - Created `NetworkSeeder` to populate major blockchain networks (Bitcoin, Ethereum, BSC, etc.).
 - Updated `DatabaseSeeder` to include the new seeders.
+- **[Feature: User Role Assignment CLI]**
+    - Optimized Request: Create a CLI command to assign roles to users by ID, restricted to local development, with flags to skip confirmation prompts.
+    - Implemented: Created `app/Console/Commands/AssignRoleToUser.php` providing `user:assign-role {user_id} {role_name} {entity_id?}`.
+    - Implemented: Added environment check to restrict execution to `local`.
+    - Implemented: Added `--force` (or `-F`) flag to bypass interaction.
+- **[Feature: System Entity]**
+    - Optimized Request: Add a "System" entity via seeder and update the role assignment command to automatically use it as a default permissions boundary.
+    - Implemented: Created `EntitySeeder` to generate a default "System" entity (`slug: system`).
+    - Implemented: Updated `DatabaseSeeder` to include `EntitySeeder`.
+    - Implemented: Updated `user:assign-role` command to automatically resolve and use the "System" entity ID if `config('permission.teams')` is active and no `entity_id` is provided.
 - **[Feature: Schema Hardening]**
     - Optimized Request: Improve schema robustness for crypto applications by increasing precision, adding metadata flexibility, and optimizing query performance.
     - Implemented: Updated `transactions` and `accounts` tables to use `decimal(36, 18)` for `amount`, `amount_native`, and `balance` to support high-precision cryptocurrencies (like ETH/Wei).
@@ -26,9 +36,14 @@ This file tracks all changes made to the project based on user requests.
 - **[Feature: RBAC & Multi-Tenant Accounts]**
     - Optimized Request: Add Spatie Permissions library and transition to a multi-tenant model where multiple users can have roles at an account via a pivot table.
     - Implemented: Installed `spatie/laravel-permission` and enabled the **Teams** feature.
-    - Implemented: Configured `account_id` as the team foreign key to allow scoped role assignments (multi-tenancy).
+    - Implemented: Configured `entity_id` as the team foreign key to allow scoped role assignments (multi-tenancy).
     - Implemented: Removed `user_id` from `accounts` table and created the `account_user` pivot table.
     - Implemented: Updated `User` model with `HasRoles` trait and `BelongsToMany` accounts relationship.
+- **[Feature: Entity Layer]**
+    - Optimized Request: Add a grouping layer (Entity) for accounts, serving as the primary permissions boundary to accommodate both sole traders and companies.
+    - Implemented: Created `entities` table (Parent) and `Entity` model.
+    - Implemented: Added `entity_id` to `accounts` table.
+    - Implemented: Updated Spatie Permission config to use `entity_id` as the Team ID (replacing `account_id`), enabling Entity-level roles.
 
 ### Changed
 - **[Refactor: Transaction Model & Schema]**

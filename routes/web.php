@@ -10,8 +10,14 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
+use App\Http\Controllers\SystemController;
+
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/system', [SystemController::class, 'index'])->name('system.dashboard');
+});
 
 require __DIR__.'/settings.php';

@@ -6,10 +6,11 @@ To build a robust, multi-tenant financial and cryptocurrency portfolio tracking 
 ## Core Architecture
 
 ### 1. Multi-Tenancy & RBAC
-- **Structure:** Users do not "own" accounts directly via a foreign key. Instead, the system uses a **Many-to-Many** relationship (`account_user` pivot).
+- **Hierarchy:** `Entity` -> `Accounts` -> `Transactions`.
 - **Permissions:** Implementation uses **Spatie Laravel Permission** in **Teams Mode**.
-    - **Team:** An `Account` acts as a Team (`team_foreign_key` = `account_id`).
-    - **Roles:** Users have scoped roles per account (e.g., 'Admin' on Account A, 'Viewer' on Account B).
+    - **Team:** An `Entity` acts as a Team (`team_foreign_key` = `entity_id`).
+    - **Roles:** Users have scoped roles per Entity (e.g., 'Admin' of 'My LLC' or 'Personal').
+- **Membership:** Users belong to an `Entity` and have access to its Accounts.
 
 ### 2. Financial Ledger
 - **Transactions:** The `transactions` table tracks individual account movements.
@@ -17,30 +18,27 @@ To build a robust, multi-tenant financial and cryptocurrency portfolio tracking 
     - **Direction:** Determined by the sign of the `amount` column.
     - **Precision:** `decimal(36, 18)` is used for all amounts and balances to support ETH/Wei precision.
     - **Fees:** Explicit `fee` and `fee_currency_id` columns track costs separately from the principal.
-    - **Metadata:** A `meta_data` JSON column stores platform-specific details (block hashes, nonces, raw API responses).
+    - **Metadata:** A `meta_data` JSON column stores platform-specific details.
 
 ### 3. Currency & Networks
-- **Conversions:** Handled via a dedicated `conversions` table that links a "Source Transaction" (Sell) and a "Destination Transaction" (Buy) with an explicit exchange rate.
-- **Networks:** Explicit support for Blockchain Networks (Ethereum, BSC, etc.) via the `networks` table.
+- **Conversions:** Handled via a dedicated `conversions` table linking a "Source" and "Destination" transaction.
+- **Networks:** Explicit support for Blockchain Networks via `networks` table.
 
 ## AI Assistant Pre-Prompt (Context Injection)
 
-*Copy and paste the following block to give an AI assistant full context of the project state:*
+*Copy and paste the following block to give an AI assistant full context:*
 
 ```text
-You are working on a Laravel 11 financial portfolio application with the following architectural constraints:
+You are working on a Laravel 11 financial portfolio application.
 
-1.  **Multi-Tenancy:** The app uses Spatie Permissions in "Teams" mode. An `Account` is a "Team". Users belong to accounts via an `account_user` pivot, but their roles are defined in `model_has_roles` scoped by `account_id`.
-2.  **Database Schema:**
-    -   `accounts`: No `user_id`. Has `balance` (decimal 36,18).
-    -   `transactions`: Linked to `account_id`. Uses signed `amount` (decimal 36,18) for direction. Has `meta_data` (JSON) and explicit `fee` columns.
-    -   `conversions`: Links two transactions (source/dest) to represent a trade.
-    -   `currencies` / `networks` / `platforms`: Reference tables.
+1.  **Multi-Tenancy:** Spatie Permissions in "Teams" mode. `Entity` is the "Team". Permissions scoped to `entity_id`.
+2.  **Schema:**
+    -   `entities`: Parent grouping (User owned). Acts as RBAC Team.
+    -   `accounts`: Belongs to `Entity`. Has `balance` (decimal 36,18).
+    -   `transactions`: Linked to `account_id`. Uses signed `amount` (decimal 36,18). Has `meta_data` (JSON) and `fee` columns.
+    -   `conversions`: Links source/dest transactions.
 3.  **Conventions:**
-    -   Always use `decimal(36, 18)` for money/crypto.
-    -   Transfers must create two transaction records (Sender: -X, Recipient: +Y).
-    -   Conversions must create a `Conversion` record linking the two legs.
-    -   Use Spatie's `setPermissionsTeamId($accountId)` before checking roles.
-
-Current State: The database schema is hardened (indexes, precision) and seeded with major currencies/networks.
+    -   Always use `decimal(36, 18)`.
+    -   Transfers = 2 transaction records.
+    -   Use Spatie's `setPermissionsTeamId($entityId)`.
 ```

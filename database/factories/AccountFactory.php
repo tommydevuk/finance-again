@@ -17,6 +17,7 @@ class AccountFactory extends Factory
     public function definition(): array
     {
         return [
+            'entity_id' => \App\Models\Entity::factory(),
             'platform_id' => \App\Models\Platform::factory(),
             'currency_id' => \App\Models\Currency::factory(),
             'network_id' => \App\Models\Network::factory(),

@@ -13,6 +13,7 @@ class Account extends Model
     use HasFactory;
 
     protected $fillable = [
+        'entity_id',
         'platform_id',
         'currency_id',
         'network_id',
@@ -21,6 +22,11 @@ class Account extends Model
         'type',
         'balance',
     ];
+
+    public function entity(): BelongsTo
+    {
+        return $this->belongsTo(Entity::class);
+    }
 
     public function users(): BelongsToMany
     {

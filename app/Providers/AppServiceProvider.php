@@ -6,6 +6,8 @@ use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
+use App\Enums\RolesEnum;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Password;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +25,21 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::before(function ($user, $ability) {
+            // Check for Super Admin role within an entity of type 'system'
+            return $user->roles()
+                ->where('name', RolesEnum::SUPER_ADMIN->value)
+                ->whereHas('entity', fn ($query) => $query->where('type', 'system'))
+                ->exists() ? true : null;
+        });
+
+        Gate::define('viewSystemDashboard', function ($user) {
+            return $user->roles()
+                ->where('name', RolesEnum::SUPER_ADMIN->value)
+                ->whereHas('entity', fn ($query) => $query->where('type', 'system'))
+                ->exists();
+        });
+
         $this->configureDefaults();
     }
 

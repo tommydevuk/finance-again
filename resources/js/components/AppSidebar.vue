@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
+import { Link, usePage } from '@inertiajs/vue3';
+import { BookOpen, Folder, LayoutGrid, ShieldCheck } from 'lucide-vue-next';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
@@ -16,14 +16,30 @@ import {
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import AppLogo from './AppLogo.vue';
+import { computed } from 'vue';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-];
+const page = usePage();
+const user = computed(() => page.props.auth.user);
+
+const mainNavItems = computed<NavItem[]>(() => {
+    const items = [
+        {
+            title: 'Dashboard',
+            href: dashboard(),
+            icon: LayoutGrid,
+        },
+    ];
+
+    if (user.value?.roles?.some(role => role.name === 'Super Admin')) {
+        items.push({
+            title: 'System',
+            href: '/system',
+            icon: ShieldCheck,
+        });
+    }
+
+    return items;
+});
 
 const footerNavItems: NavItem[] = [
     {

@@ -13,14 +13,34 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $this->call([
+            RolesAndPermissionsSeeder::class,
+        ]);
 
-        User::factory()->create([
+        $user1 = User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
 
+        $user2 = User::factory()->create([
+            'name' => 'Super Admin',
+            'email' => 'admin@example.com',
+        ]);
+
+        // Create the System Entity
+        $systemEntity = \App\Models\Entity::factory()->create([
+            'name' => 'System',
+            'slug' => 'system',
+            'type' => 'system',
+            'user_id' => $user2->id,
+        ]);
+
+        // Assign Super Admin role scoped to the System Entity
+        setPermissionsTeamId($systemEntity->id);
+        $user2->assignRole('Super Admin');
+
         $this->call([
+            EntitySeeder::class,
             CurrencySeeder::class,
             NetworkSeeder::class,
         ]);

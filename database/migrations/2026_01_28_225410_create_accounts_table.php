@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('entity_id')->constrained()->cascadeOnDelete();
             $table->foreignId('platform_id')->constrained()->cascadeOnDelete();
             $table->foreignId('currency_id')->nullable()->constrained(); // Default currency for this account
             $table->foreignId('network_id')->nullable()->constrained()->nullOnDelete();
