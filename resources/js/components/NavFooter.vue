@@ -1,3 +1,9 @@
+<script lang="ts">
+export default {
+    name: 'NavFooter',
+};
+</script>
+
 <script setup lang="ts">
 import {
     SidebarGroup,

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, ShieldCheck, Settings2 } from 'lucide-vue-next';
+import { BookOpen, Folder, ShieldCheck, Settings2 } from 'lucide-vue-next';
 import { computed } from 'vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -20,11 +20,10 @@ import { type NavItem } from '@/types';
 import AppLogo from './AppLogo.vue';
 
 const page = usePage();
-const user = computed(() => page.props.auth.user);
 const can = computed(() => page.props.auth.can);
 
 const mainNavItems = computed<NavItem[]>(() => {
-    const items = [
+    const items: NavItem[] = [
         {
             title: 'Dashboard',
             href: dashboard().url,

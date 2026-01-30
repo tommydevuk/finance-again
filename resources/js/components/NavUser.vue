@@ -1,3 +1,9 @@
+<script lang="ts">
+export default {
+    name: 'NavUser',
+};
+</script>
+
 <script setup lang="ts">
 import { usePage } from '@inertiajs/vue3';
 import { ChevronsUpDown } from 'lucide-vue-next';
