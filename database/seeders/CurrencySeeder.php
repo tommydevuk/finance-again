@@ -70,7 +70,7 @@ class CurrencySeeder extends Seeder
                 'type' => 'fiat',
                 'decimals' => 2,
             ],
-            
+
             // Crypto Currencies
             [
                 'code' => 'BTC',

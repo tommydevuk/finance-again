@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('destination_transaction_id')->constrained('transactions')->cascadeOnDelete();
             $table->decimal('rate', 36, 18); // Exchange rate (Dest / Source)
             $table->timestamps();
-            
+
             // Ensure a transaction can only be part of one conversion leg (optional but good for integrity)
             $table->unique('source_transaction_id');
             $table->unique('destination_transaction_id');

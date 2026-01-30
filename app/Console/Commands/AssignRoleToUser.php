@@ -27,8 +27,9 @@ class AssignRoleToUser extends Command
      */
     public function handle()
     {
-        if (!app()->isLocal()) {
+        if (! app()->isLocal()) {
             $this->error('This command can only be run in the local environment.');
+
             return 1;
         }
 
@@ -38,32 +39,35 @@ class AssignRoleToUser extends Command
 
         $user = User::find($userId);
 
-        if (!$user) {
+        if (! $user) {
             $this->error("User with ID {$userId} not found.");
+
             return 1;
         }
 
         if (config('permission.teams')) {
-            if (!$entityId) {
+            if (! $entityId) {
                 $systemEntity = Entity::where('slug', 'system')->first();
                 if ($systemEntity) {
                     $entityId = $systemEntity->id;
                     $this->info("No entity ID provided. Using System Entity (ID: {$entityId}).");
                 } else {
-                    $this->error("No entity ID provided and System Entity not found.");
+                    $this->error('No entity ID provided and System Entity not found.');
+
                     return 1;
                 }
             }
             setPermissionsTeamId($entityId);
         }
 
-        if (!$this->option('force')) {
+        if (! $this->option('force')) {
             $confirmationMessage = "Are you sure you want to assign role '{$roleName}' to user '{$user->name}' ({$user->email})?";
             if ($entityId) {
                 $confirmationMessage .= " for Entity ID {$entityId}?";
             }
-            if (!$this->confirm($confirmationMessage)) {
+            if (! $this->confirm($confirmationMessage)) {
                 $this->info('Operation cancelled.');
+
                 return 0;
             }
         }
@@ -72,7 +76,8 @@ class AssignRoleToUser extends Command
             $user->assignRole($roleName);
             $this->info("Role '{$roleName}' assigned to user '{$user->name}' successfully.");
         } catch (\Throwable $e) {
-            $this->error("Failed to assign role: " . $e->getMessage());
+            $this->error('Failed to assign role: '.$e->getMessage());
+
             return 1;
         }
 

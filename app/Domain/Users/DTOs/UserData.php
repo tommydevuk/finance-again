@@ -20,7 +20,7 @@ class UserData
             password: $request->validated('password'),
         );
     }
-    
+
     public function toArray(): array
     {
         $data = [

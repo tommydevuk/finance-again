@@ -11,7 +11,7 @@ class UpdateUserAction
     public function execute(User $user, UserData $data): User
     {
         $userData = $data->toArray();
-        
+
         // If password is not provided, don't update it
         if (empty($userData['password'])) {
             unset($userData['password']);

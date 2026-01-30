@@ -20,7 +20,7 @@ class UserController extends Controller
 {
     public function index(UserIndexRequest $request)
     {
-        $query = new SystemUserQuery();
+        $query = new SystemUserQuery;
         $users = $query->filter($request)->getQuery()->with('roles')->paginate(10)->withQueryString();
 
         return Inertia::render('System/Users/Index', [
@@ -32,6 +32,7 @@ class UserController extends Controller
     public function create()
     {
         Gate::authorize('create', User::class);
+
         return Inertia::render('System/Users/Create');
     }
 
@@ -46,6 +47,7 @@ class UserController extends Controller
     public function edit(User $user)
     {
         Gate::authorize('update', $user);
+
         return Inertia::render('System/Users/Edit', [
             'user' => $user,
         ]);

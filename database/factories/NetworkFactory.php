@@ -17,7 +17,7 @@ class NetworkFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->word() . ' Network',
+            'name' => $this->faker->word().' Network',
             'code' => strtoupper($this->faker->unique()->lexify('???')),
             'chain_id' => $this->faker->numberBetween(1, 10000),
             'currency_symbol' => strtoupper($this->faker->lexify('???')),

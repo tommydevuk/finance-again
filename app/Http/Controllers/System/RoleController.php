@@ -5,11 +5,12 @@ namespace App\Http\Controllers\System;
 use App\Http\Controllers\Controller;
 use App\Models\Entity;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-use Illuminate\Support\Facades\Gate;                        
+
 class RoleController extends Controller
 {
     public function index(): Response
@@ -17,13 +18,13 @@ class RoleController extends Controller
         Gate::authorize('viewAny permission');
 
         $systemEntity = Entity::where('type', 'system')->first();
-        
+
         $roles = Role::where('entity_id', $systemEntity?->id)
             ->withCount('permissions')
             ->get();
 
         return Inertia::render('System/Roles/Index', [
-            'roles' => $roles
+            'roles' => $roles,
         ]);
     }
 
@@ -34,13 +35,14 @@ class RoleController extends Controller
         $permissions = Permission::all()->groupBy(function ($permission) {
             // Group by model name (e.g., 'viewAny network' -> 'network')
             $parts = explode(' ', $permission->name);
+
             return count($parts) > 1 ? $parts[1] : 'general';
         });
 
         return Inertia::render('System/Roles/EditPermissions', [
             'role' => $role,
             'assigned_permissions' => $role->permissions->pluck('id'),
-            'permissions' => $permissions
+            'permissions' => $permissions,
         ]);
     }
 
@@ -50,7 +52,7 @@ class RoleController extends Controller
 
         $request->validate([
             'permissions' => 'array',
-            'permissions.*' => 'exists:permissions,id'
+            'permissions.*' => 'exists:permissions,id',
         ]);
 
         if (config('permission.teams') && isset($role->entity_id)) {

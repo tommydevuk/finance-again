@@ -18,7 +18,7 @@ Route::get('dashboard', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/system', [SystemController::class, 'index'])->name('system.dashboard');
-    
+
     Route::prefix('system')->name('system.')->group(function () {
         Route::resource('users', \App\Http\Controllers\System\UserController::class);
         Route::get('/roles', [App\Http\Controllers\System\RoleController::class, 'index'])->name('roles.index');
