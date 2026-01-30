@@ -7,6 +7,15 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import system from '@/routes/system';
 import { type BreadcrumbItem } from '@/types';
 
+defineProps<{
+    counts: {
+        users: number;
+        roles: number;
+        entities: number;
+        transactions: number;
+    };
+}>();
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'System Dashboard',
@@ -36,20 +45,25 @@ const breadcrumbs: BreadcrumbItem[] = [
             <div class="grid auto-rows-min gap-4 md:grid-cols-3">
                 <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border p-4 bg-sidebar">
                     <h3 class="font-semibold mb-2">Entities</h3>
-                    <div class="text-3xl font-bold">--</div>
+                    <div class="text-3xl font-bold">{{ counts.entities }}</div>
                 </div>
-                <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border p-4 bg-sidebar">
+                <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border p-4 bg-sidebar flex flex-col justify-between">
                      <h3 class="font-semibold mb-2">Users</h3>
-                    <div class="text-3xl font-bold">--</div>
+                    <div class="flex items-center justify-between">
+                        <div class="text-3xl font-bold">{{ counts.users }}</div>
+                        <Button variant="ghost" size="sm" as-child>
+                            <Link :href="system.users.index.url()">View All</Link>
+                        </Button>
+                    </div>
                 </div>
                 <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border p-4 bg-sidebar">
                      <h3 class="font-semibold mb-2">Transactions</h3>
-                    <div class="text-3xl font-bold">--</div>
+                    <div class="text-3xl font-bold">{{ counts.transactions }}</div>
                 </div>
                 <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border p-4 bg-sidebar flex flex-col justify-between">
                      <h3 class="font-semibold mb-2">System Roles</h3>
                     <div class="flex items-center justify-between">
-                        <div class="text-3xl font-bold">--</div>
+                        <div class="text-3xl font-bold">{{ counts.roles }}</div>
                         <Button variant="ghost" size="sm" as-child>
                             <Link :href="system.roles.index.url()">View All</Link>
                         </Button>

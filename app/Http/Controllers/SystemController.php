@@ -13,6 +13,13 @@ class SystemController extends Controller
     {
         Gate::authorize('viewSystemDashboard');
 
-        return Inertia::render('System/Dashboard');
+        return Inertia::render('System/Dashboard', [
+            'counts' => [
+                'users' => \App\Models\User::count(),
+                'roles' => \Spatie\Permission\Models\Role::count(),
+                'entities' => \App\Models\Entity::count(),
+                'transactions' => \App\Models\Transaction::count(),
+            ],
+        ]);
     }
 }

@@ -1,18 +1,17 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
-import AppLayout from '@/layouts/AppLayout.vue';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu';
-import { Search, Plus, MoreHorizontal, FilePen } from 'lucide-vue-next';
-import { ref, watch } from 'vue';
 import { useDebounceFn } from '@vueuse/core';
+import { Search, Plus, FilePen, User as UserIcon } from 'lucide-vue-next';
+import { ref, watch } from 'vue';
+import PageHeader from '@/components/PageHeader.vue';
+import Pagination from '@/components/Pagination.vue';
+import ResourceGrid from '@/components/ResourceGrid.vue';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import AppLayout from '@/layouts/AppLayout.vue';
+
 interface User {
     id: number;
     name: string;
@@ -21,22 +20,20 @@ interface User {
     created_at: string;
 }
 
-interface PaginationLink {
-    url: string | null;
-    label: string;
-    active: boolean;
-}
-
 interface Props {
     users: {
         data: User[];
-        links: PaginationLink[];
         meta: {
             current_page: number;
             last_page: number;
             from: number;
             to: number;
             total: number;
+            links: Array<{
+                url: string | null;
+                label: string;
+                active: boolean;
+            }>;
         };
     };
     filters: {
@@ -70,18 +67,18 @@ const breadcrumbs = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex flex-col gap-6 p-4">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-2xl font-bold tracking-tight">System Users</h1>
-                    <p class="text-muted-foreground text-sm">Manage users and their system access.</p>
-                </div>
-                <Button as-child>
-                    <Link href="/system/users/create">
-                        <Plus class="mr-2 h-4 w-4" />
-                        Create User
-                    </Link>
-                </Button>
-            </div>
+            <PageHeader>
+                <template #title>System Users</template>
+                <template #description>Manage users and their system access.</template>
+                <template #actions>
+                    <Button as-child>
+                        <Link href="/system/users/create">
+                            <Plus class="mr-2 h-4 w-4" />
+                            Create User
+                        </Link>
+                    </Button>
+                </template>
+            </PageHeader>
 
             <div class="flex items-center gap-4">
                 <div class="relative flex-1 max-w-sm">
@@ -94,81 +91,60 @@ const breadcrumbs = [
                 </div>
             </div>
 
-            <div class="rounded-md border bg-card">
-                <div class="relative w-full overflow-auto">
-                    <table class="w-full caption-bottom text-sm">
-                        <thead class="[&_tr]:border-b">
-                            <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                                <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</th>
-                                <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</th>
-                                <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Roles</th>
-                                <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Created At</th>
-                                <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="[&_tr:last-child]:border-0">
-                            <tr v-if="users.data.length === 0">
-                                <td colspan="5" class="p-4 text-center text-muted-foreground">
-                                    No users found.
-                                </td>
-                            </tr>
-                            <tr v-for="user in users.data" :key="user.id" class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                                <td class="p-4 align-middle font-medium">{{ user.name }}</td>
-                                <td class="p-4 align-middle">{{ user.email }}</td>
-                                <td class="p-4 align-middle">
-                                    <div class="flex gap-1 flex-wrap">
-                                        <Badge v-for="role in user.roles" :key="role.name" variant="secondary" class="text-xs">
-                                            {{ role.name }}
-                                        </Badge>
-                                    </div>
-                                </td>
-                                <td class="p-4 align-middle">{{ new Date(user.created_at).toLocaleDateString() }}</td>
-                                <td class="p-4 align-middle text-right">
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger as-child>
-                                            <Button variant="ghost" class="h-8 w-8 p-0">
-                                                <span class="sr-only">Open menu</span>
-                                                <MoreHorizontal class="h-4 w-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem as-child>
-                                                <Link :href="`/system/users/${user.id}/edit`" class="flex items-center cursor-pointer">
-                                                    <FilePen class="mr-2 h-4 w-4" />
-                                                    Edit
-                                                </Link>
-                                            </DropdownMenuItem>
-                                            <!-- Add Delete action if needed, usually requires confirmation modal -->
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <div v-if="users.data.length === 0" class="flex min-h-[200px] flex-col items-center justify-center rounded-md border border-dashed text-center animate-in fade-in-50">
+                <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+                    <UserIcon class="h-5 w-5 text-muted-foreground" />
                 </div>
+                <h3 class="mt-4 text-lg font-semibold">No users found</h3>
+                <p class="mb-4 text-sm text-muted-foreground">
+                    No users match your search criteria.
+                </p>
+                <Button variant="outline" @click="search = ''">Clear Search</Button>
             </div>
 
+            <ResourceGrid v-else>
+                <Card v-for="user in users.data" :key="user.id" class="overflow-hidden transition-all hover:border-primary/50">
+                    <CardHeader class="pb-3 border-b flex flex-row items-center justify-between space-y-0">
+                        <div class="flex items-center gap-3">
+                            <div class="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
+                                <span class="text-sm font-medium">{{ user.name.charAt(0) }}</span>
+                            </div>
+                            <div>
+                                <CardTitle class="text-base">{{ user.name }}</CardTitle>
+                                <p class="text-xs text-muted-foreground">{{ user.email }}</p>
+                            </div>
+                        </div>
+                    </CardHeader>
+                    <CardContent class="pt-4">
+                        <div class="flex flex-col gap-3">
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-muted-foreground">Roles:</span>
+                                <div class="flex gap-1 flex-wrap justify-end">
+                                    <Badge v-for="role in user.roles" :key="role.name" variant="secondary" class="text-xs">
+                                        {{ role.name }}
+                                    </Badge>
+                                    <span v-if="user.roles.length === 0" class="text-muted-foreground italic text-xs">No roles</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-muted-foreground">Joined:</span>
+                                <span>{{ new Date(user.created_at).toLocaleDateString() }}</span>
+                            </div>
+                        </div>
+                    </CardContent>
+                    <CardFooter class="border-t bg-muted/50 p-3 flex justify-end">
+                        <Button variant="ghost" size="sm" as-child class="h-8 w-full justify-center">
+                            <Link :href="`/system/users/${user.id}/edit`">
+                                <FilePen class="mr-2 h-3.5 w-3.5" />
+                                Edit User
+                            </Link>
+                        </Button>
+                    </CardFooter>
+                </Card>
+            </ResourceGrid>
+
             <!-- Pagination -->
-            <div v-if="users.meta.last_page > 1" class="flex items-center justify-between">
-                <div class="text-sm text-muted-foreground">
-                    Showing {{ users.meta.from }} to {{ users.meta.to }} of {{ users.meta.total }} results
-                </div>
-                <div class="flex items-center gap-2">
-                    <Button
-                        v-for="(link, index) in users.meta.links"
-                        :key="index"
-                        :variant="link.active ? 'default' : 'outline'"
-                        :size="'sm'"
-                        :disabled="!link.url"
-                        as-child
-                    >
-                        <Link v-if="link.url" :href="link.url">
-                            <span v-html="link.label"></span>
-                        </Link>
-                        <span v-else v-html="link.label"></span>
-                    </Button>
-                </div>
-            </div>
+            <Pagination :meta="users.meta" />
         </div>
     </AppLayout>
 </template>

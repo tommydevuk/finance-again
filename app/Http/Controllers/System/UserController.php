@@ -11,7 +11,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\System\StoreUserRequest;
 use App\Http\Requests\System\UpdateUserRequest;
 use App\Http\Requests\System\UserIndexRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
 class UserController extends Controller
@@ -22,14 +24,14 @@ class UserController extends Controller
         $users = $query->filter($request)->getQuery()->with('roles')->paginate(10)->withQueryString();
 
         return Inertia::render('System/Users/Index', [
-            'users' => $users,
+            'users' => UserResource::collection($users),
             'filters' => $request->only(['search', 'sort', 'direction']),
         ]);
     }
 
     public function create()
     {
-        $this->authorize('create', User::class);
+        Gate::authorize('create', User::class);
         return Inertia::render('System/Users/Create');
     }
 
@@ -43,7 +45,7 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        $this->authorize('update', $user);
+        Gate::authorize('update', $user);
         return Inertia::render('System/Users/Edit', [
             'user' => $user,
         ]);
@@ -59,7 +61,7 @@ class UserController extends Controller
 
     public function destroy(User $user, DeleteUserAction $action)
     {
-        $this->authorize('delete', $user);
+        Gate::authorize('delete', $user);
         $action->execute($user);
 
         return redirect()->route('system.users.index')->with('success', 'User deleted successfully.');

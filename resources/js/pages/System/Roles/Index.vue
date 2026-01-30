@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 import { Shield, ShieldCheck, Settings2 } from 'lucide-vue-next';
+import PageHeader from '@/components/PageHeader.vue';
+import ResourceGrid from '@/components/ResourceGrid.vue';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import AppLayout from '@/layouts/AppLayout.vue';
 import system from '@/routes/system';
 import { type BreadcrumbItem } from '@/types';
@@ -28,14 +30,12 @@ const breadcrumbs: BreadcrumbItem[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="p-4 flex flex-col gap-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-2xl font-bold tracking-tight">System Roles</h1>
-                    <p class="text-muted-foreground text-sm">Manage global role templates and their permissions.</p>
-                </div>
-            </div>
+            <PageHeader>
+                <template #title>System Roles</template>
+                <template #description>Manage global role templates and their permissions.</template>
+            </PageHeader>
 
-            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <ResourceGrid>
                 <Card v-for="role in roles" :key="role.id" class="overflow-hidden transition-all hover:border-primary/50">
                     <CardHeader class="pb-3 border-b ">
                         <div class="flex items-center gap-2">
@@ -59,7 +59,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                         </Button>
                     </CardFooter>
                 </Card>
-            </div>
+            </ResourceGrid>
         </div>
     </AppLayout>
 </template>
