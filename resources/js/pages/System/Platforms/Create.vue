@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/AppLayout.vue';
 import InputError from '@/components/InputError.vue';
 
@@ -62,19 +61,20 @@ const breadcrumbs = [
 
                         <div class="space-y-2">
                             <Label for="type">Type</Label>
-                            <Select v-model="form.type">
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select a type" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="bank">Bank</SelectItem>
-                                    <SelectItem value="exchange">Exchange</SelectItem>
-                                    <SelectItem value="casino">Casino</SelectItem>
-                                    <SelectItem value="wallet">Wallet</SelectItem>
-                                    <SelectItem value="payment_processor">Payment Processor</SelectItem>
-                                    <SelectItem value="other">Other</SelectItem>
-                                </SelectContent>
-                            </Select>
+                            <div class="relative w-full items-center">
+                                <select 
+                                    id="type" 
+                                    v-model="form.type"
+                                    class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    <option value="bank">Bank</option>
+                                    <option value="exchange">Exchange</option>
+                                    <option value="casino">Casino</option>
+                                    <option value="wallet">Wallet</option>
+                                    <option value="payment_processor">Payment Processor</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
                             <InputError :message="form.errors.type" />
                         </div>
 

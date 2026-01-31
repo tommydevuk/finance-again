@@ -1,25 +1,23 @@
 <script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ArrowLeft, Save, Trash2 } from 'lucide-vue-next';
-import PageHeader from '@/components/PageHeader.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/AppLayout.vue';
 import InputError from '@/components/InputError.vue';
+import PageHeader from '@/components/PageHeader.vue';
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
 
 interface Platform {
     id: number;
@@ -35,7 +33,7 @@ const props = defineProps<{
 
 const form = useForm({
     name: props.platform.data.name,
-    website: props.platform.data.website,
+    website: props.platform.data.website ?? '',
     type: props.platform.data.type,
 });
 
@@ -89,45 +87,48 @@ const breadcrumbs = [
 
                         <div class="space-y-2">
                             <Label for="type">Type</Label>
-                            <Select v-model="form.type">
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select a type" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="bank">Bank</SelectItem>
-                                    <SelectItem value="exchange">Exchange</SelectItem>
-                                    <SelectItem value="casino">Casino</SelectItem>
-                                    <SelectItem value="wallet">Wallet</SelectItem>
-                                    <SelectItem value="payment_processor">Payment Processor</SelectItem>
-                                    <SelectItem value="other">Other</SelectItem>
-                                </SelectContent>
-                            </Select>
+                            <div class="relative w-full items-center">
+                                <select 
+                                    id="type" 
+                                    v-model="form.type"
+                                    class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    <option value="bank">Bank</option>
+                                    <option value="exchange">Exchange</option>
+                                    <option value="casino">Casino</option>
+                                    <option value="wallet">Wallet</option>
+                                    <option value="payment_processor">Payment Processor</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
                             <InputError :message="form.errors.type" />
                         </div>
 
                         <div class="flex justify-between">
-                            <AlertDialog>
-                                <AlertDialogTrigger as-child>
+                            <Dialog>
+                                <DialogTrigger as-child>
                                     <Button variant="destructive" type="button">
                                         <Trash2 class="mr-2 h-4 w-4" />
                                         Delete Platform
                                     </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                        <AlertDialogDescription>
+                                </DialogTrigger>
+                                <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>Are you absolutely sure?</DialogTitle>
+                                        <DialogDescription>
                                             This action cannot be undone. This will permanently delete the platform.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction @click="destroy" class="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    <DialogFooter>
+                                        <DialogClose as-child>
+                                            <Button variant="outline">Cancel</Button>
+                                        </DialogClose>
+                                        <Button variant="destructive" @click="destroy">
                                             Delete
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
+                                        </Button>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
 
                             <Button type="submit" :disabled="form.processing">
                                 <Save class="mr-2 h-4 w-4" />
