@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
 import { useDebounceFn } from '@vueuse/core';
-import { Search, Plus, FilePen, User as UserIcon, Filter, ArrowUpDown } from 'lucide-vue-next';
-import { ref, watch } from 'vue';
+import { Search, Plus, FilePen, User as UserIcon, Filter, ArrowUpDown, X } from 'lucide-vue-next';
+import { ref, watch, computed } from 'vue';
 import PageHeader from '@/components/PageHeader.vue';
 import Pagination from '@/components/Pagination.vue';
 import ResourceGrid from '@/components/ResourceGrid.vue';
@@ -78,6 +78,21 @@ const handleSearch = useDebounceFn(() => {
         replace: true,
     });
 }, 300);
+
+const isFiltered = computed(() => {
+    return search.value !== '' || 
+           selectedRole.value !== '' || 
+           sort.value !== 'created_at' || 
+           direction.value !== 'desc';
+});
+
+const clearFilters = () => {
+    search.value = '';
+    selectedRole.value = '';
+    sort.value = 'created_at';
+    direction.value = 'desc';
+    // Watcher will trigger handleSearch
+};
 
 watch([search, selectedRole, sort, direction], () => {
     handleSearch();
@@ -161,6 +176,10 @@ const breadcrumbs = [
                         </DropdownMenuRadioGroup>
                     </DropdownMenuContent>
                 </DropdownMenu>
+
+                <Button v-if="isFiltered" variant="ghost" size="icon" @click="clearFilters" title="Clear Filters">
+                    <X class="h-4 w-4" />
+                </Button>
             </div>
 
             <div v-if="users.data.length === 0" class="flex min-h-[200px] flex-col items-center justify-center rounded-md border border-dashed text-center animate-in fade-in-50">
