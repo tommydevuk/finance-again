@@ -16,6 +16,13 @@ class SystemUserQuery extends UserQuery
             });
         }
 
+        if ($request->filled('role')) {
+            $role = $request->input('role');
+            $this->query->whereHas('allRoles', function ($q) use ($role) {
+                $q->where('name', $role);
+            });
+        }
+
         if ($request->filled('sort')) {
             // simple sort handling, can be expanded
             $sort = $request->input('sort');

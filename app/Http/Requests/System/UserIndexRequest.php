@@ -16,6 +16,7 @@ class UserIndexRequest extends FormRequest
     {
         return [
             'search' => ['nullable', 'string', 'max:255'],
+            'role' => ['nullable', 'string', 'exists:roles,name'],
             'sort' => ['nullable', 'string', 'in:name,email,created_at'],
             'direction' => ['nullable', 'string', 'in:asc,desc'],
         ];

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
 import { useDebounceFn } from '@vueuse/core';
-import { Search, Plus, FilePen, User as UserIcon } from 'lucide-vue-next';
+import { Search, Plus, FilePen, User as UserIcon, Filter } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 import PageHeader from '@/components/PageHeader.vue';
 import Pagination from '@/components/Pagination.vue';
@@ -10,6 +10,17 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+    DropdownMenuRadioGroup,
+    DropdownMenuRadioItem,
+} from '@/components/ui/dropdown-menu';
 import AppLayout from '@/layouts/AppLayout.vue';
 
 interface User {
@@ -38,6 +49,7 @@ interface Props {
     };
     filters: {
         search?: string;
+        role?: string;
     };
     roles: Array<{
         id: number;
@@ -49,16 +61,20 @@ interface Props {
 const props = defineProps<Props>();
 
 const search = ref(props.filters.search || '');
+const selectedRole = ref(props.filters.role || '');
 
-const handleSearch = useDebounceFn((value: string) => {
-    router.get('/system/users', { search: value }, {
+const handleSearch = useDebounceFn(() => {
+    router.get('/system/users', { 
+        search: search.value,
+        role: selectedRole.value 
+    }, {
         preserveState: true,
         replace: true,
     });
 }, 300);
 
-watch(search, (value) => {
-    handleSearch(value);
+watch([search, selectedRole], () => {
+    handleSearch();
 });
 
 const breadcrumbs = [
@@ -94,6 +110,26 @@ const breadcrumbs = [
                         class="pl-8"
                     />
                 </div>
+                <DropdownMenu>
+                    <DropdownMenuTrigger as-child>
+                        <Button variant="outline" class="gap-2">
+                            <Filter class="h-4 w-4" />
+                            {{ selectedRole ? selectedRole : 'Filter by Role' }}
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" class="w-56">
+                        <DropdownMenuLabel>Filter by Role</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuRadioGroup v-model="selectedRole">
+                            <DropdownMenuRadioItem value="">
+                                All Roles
+                            </DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem v-for="role in roles" :key="role.id" :value="role.name">
+                                {{ role.name }}
+                            </DropdownMenuRadioItem>
+                        </DropdownMenuRadioGroup>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
 
             <div v-if="users.data.length === 0" class="flex min-h-[200px] flex-col items-center justify-center rounded-md border border-dashed text-center animate-in fade-in-50">
