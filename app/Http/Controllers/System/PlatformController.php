@@ -20,7 +20,11 @@ class PlatformController extends Controller
 
         return Inertia::render('System/Platforms/Index', [
             'platforms' => PlatformResource::collection($platforms),
-            'filters' => $request->only(['search', 'sort', 'direction']),
+            'filters' => $request->only(['search', 'sort', 'direction', 'type']),
+            'types' => collect(\App\Enums\PlatformTypeEnum::cases())->map(fn ($type) => [
+                'value' => $type->value,
+                'label' => $type->label(),
+            ]),
         ]);
     }
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import { Plus, FilePen, Monitor, X } from 'lucide-vue-next'; // Monitor icon for Platform?
+import { Plus, FilePen, Monitor, X, Filter } from 'lucide-vue-next'; // Monitor icon for Platform?
 import PageHeader from '@/components/PageHeader.vue';
 import Pagination from '@/components/Pagination.vue';
 import ResourceGrid from '@/components/ResourceGrid.vue';
@@ -11,6 +11,15 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { useQueryFilters } from '@/composables/useQueryFilters';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+    DropdownMenuRadioGroup,
+    DropdownMenuRadioItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 
 interface Platform {
     id: number;
@@ -41,7 +50,9 @@ interface Props {
         search?: string;
         sort?: string;
         direction?: string;
+        type?: string;
     };
+    types: Array<{ label: string; value: string }>;
 }
 
 const props = defineProps<Props>();
@@ -85,6 +96,27 @@ const breadcrumbs = [
             <div class="flex items-center gap-4">
                 <DataSearch v-model="search" />
                 
+                <DropdownMenu>
+                    <DropdownMenuTrigger as-child>
+                        <Button variant="outline" class="gap-2">
+                            <Filter class="h-4 w-4" />
+                            {{ filters.type ? types.find(t => t.value === filters.type)?.label : 'Filter by Type' }}
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" class="w-56">
+                        <DropdownMenuLabel>Filter by Type</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuRadioGroup v-model="filters.type">
+                            <DropdownMenuRadioItem value="">
+                                All Types
+                            </DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem v-for="type in types" :key="type.value" :value="type.value">
+                                {{ type.label }}
+                            </DropdownMenuRadioItem>
+                        </DropdownMenuRadioGroup>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+
                 <DataSort 
                     v-model:sort="sort" 
                     v-model:direction="direction" 
