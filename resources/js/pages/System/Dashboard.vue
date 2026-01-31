@@ -13,6 +13,7 @@ defineProps<{
         roles: number;
         entities: number;
         transactions: number;
+        platforms: number;
     };
 }>();
 
@@ -53,6 +54,15 @@ const breadcrumbs: BreadcrumbItem[] = [
                         <div class="text-3xl font-bold">{{ counts.users }}</div>
                         <Button variant="ghost" size="sm" as-child>
                             <Link :href="system.users.index.url()">View All</Link>
+                        </Button>
+                    </div>
+                </div>
+                <div class="relative overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border p-4 bg-sidebar flex flex-col justify-between">
+                     <h3 class="font-semibold mb-2">Platforms</h3>
+                    <div class="flex items-center justify-between">
+                        <div class="text-3xl font-bold">{{ counts.platforms }}</div>
+                        <Button variant="ghost" size="sm" as-child>
+                            <Link href="/system/platforms">View All</Link>
                         </Button>
                     </div>
                 </div>

@@ -18,6 +18,7 @@ class SystemController extends Controller
                 'roles' => \Spatie\Permission\Models\Role::count(),
                 'entities' => \App\Models\Entity::count(),
                 'transactions' => \App\Models\Transaction::count(),
+                'platforms' => \App\Models\Platform::count(),
             ],
         ]);
     }

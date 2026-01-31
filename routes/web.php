@@ -21,6 +21,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('system')->name('system.')->group(function () {
         Route::resource('users', \App\Http\Controllers\System\UserController::class);
+        Route::resource('platforms', \App\Http\Controllers\System\PlatformController::class);
         Route::get('/roles', [App\Http\Controllers\System\RoleController::class, 'index'])->name('roles.index');
         Route::get('/roles/{role}/permissions', [App\Http\Controllers\System\RoleController::class, 'editPermissions'])->name('roles.permissions.edit');
         Route::put('/roles/{role}/permissions', [App\Http\Controllers\System\RoleController::class, 'updatePermissions'])->name('roles.permissions.update');
