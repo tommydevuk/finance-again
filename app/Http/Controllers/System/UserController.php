@@ -19,13 +19,12 @@ use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
-    public function index(UserIndexRequest $request)
-    {
-        $query = new SystemUserQuery;
-        $users = $query->filter($request)->getQuery()->with('roles')->paginate(10)->withQueryString();
-
-        return Inertia::render('System/Users/Index', [
-            'users' => UserResource::collection($users),
+        public function index(UserIndexRequest $request)
+        {
+            $query = new SystemUserQuery;
+            $users = $query->filter($request)->getQuery()->with('allRoles')->paginate(10)->withQueryString();
+    
+            return Inertia::render('System/Users/Index', [            'users' => UserResource::collection($users),
             'filters' => $request->only(['search', 'sort', 'direction']),
             'roles' => Role::all(),
         ]);

@@ -55,4 +55,15 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Account::class);
     }
+
+    public function allRoles(): \Illuminate\Database\Eloquent\Relations\MorphToMany
+    {
+        return $this->morphToMany(
+            config('permission.models.role'),
+            'model',
+            config('permission.table_names.model_has_roles'),
+            config('permission.column_names.model_morph_key'),
+            config('permission.column_names.role_pivot_key')
+        );
+    }
 }
