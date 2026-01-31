@@ -19,6 +19,7 @@ class SystemController extends Controller
                 'entities' => \App\Models\Entity::count(),
                 'transactions' => \App\Models\Transaction::count(),
                 'platforms' => \App\Models\Platform::count(),
+                'currencies' => \App\Models\Currency::count(),
             ],
         ]);
     }

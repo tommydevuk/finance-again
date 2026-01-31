@@ -14,6 +14,7 @@ defineProps<{
         entities: number;
         transactions: number;
         platforms: number;
+        currencies: number;
     };
 }>();
 
@@ -63,6 +64,15 @@ const breadcrumbs: BreadcrumbItem[] = [
                         <div class="text-3xl font-bold">{{ counts.platforms }}</div>
                         <Button variant="ghost" size="sm" as-child>
                             <Link href="/system/platforms">View All</Link>
+                        </Button>
+                    </div>
+                </div>
+                <div class="relative overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border p-4 bg-sidebar flex flex-col justify-between">
+                     <h3 class="font-semibold mb-2">Currencies</h3>
+                    <div class="flex items-center justify-between">
+                        <div class="text-3xl font-bold">{{ counts.currencies }}</div>
+                        <Button variant="ghost" size="sm" as-child>
+                            <Link href="/system/currencies">View All</Link>
                         </Button>
                     </div>
                 </div>
