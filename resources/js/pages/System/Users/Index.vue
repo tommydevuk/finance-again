@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
 import { useDebounceFn } from '@vueuse/core';
-import { Search, Plus, FilePen, User as UserIcon, Filter } from 'lucide-vue-next';
+import { Search, Plus, FilePen, User as UserIcon, Filter, ArrowUpDown } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 import PageHeader from '@/components/PageHeader.vue';
 import Pagination from '@/components/Pagination.vue';
@@ -50,6 +50,8 @@ interface Props {
     filters: {
         search?: string;
         role?: string;
+        sort?: string;
+        direction?: string;
     };
     roles: Array<{
         id: number;
@@ -62,18 +64,22 @@ const props = defineProps<Props>();
 
 const search = ref(props.filters.search || '');
 const selectedRole = ref(props.filters.role || '');
+const sort = ref(props.filters.sort || 'created_at');
+const direction = ref(props.filters.direction || 'desc');
 
 const handleSearch = useDebounceFn(() => {
     router.get('/system/users', { 
         search: search.value,
-        role: selectedRole.value 
+        role: selectedRole.value,
+        sort: sort.value,
+        direction: direction.value
     }, {
         preserveState: true,
         replace: true,
     });
 }, 300);
 
-watch([search, selectedRole], () => {
+watch([search, selectedRole, sort, direction], () => {
     handleSearch();
 });
 
@@ -127,6 +133,31 @@ const breadcrumbs = [
                             <DropdownMenuRadioItem v-for="role in roles" :key="role.id" :value="role.name">
                                 {{ role.name }}
                             </DropdownMenuRadioItem>
+                        </DropdownMenuRadioGroup>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                
+                <DropdownMenu>
+                    <DropdownMenuTrigger as-child>
+                        <Button variant="outline" class="gap-2">
+                            <ArrowUpDown class="h-4 w-4" />
+                            Sort
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" class="w-48">
+                        <DropdownMenuLabel>Sort By</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuRadioGroup v-model="sort">
+                            <DropdownMenuRadioItem value="created_at">Date Created</DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem value="name">Name</DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem value="email">Email</DropdownMenuRadioItem>
+                        </DropdownMenuRadioGroup>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuLabel>Direction</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuRadioGroup v-model="direction">
+                            <DropdownMenuRadioItem value="asc">Ascending</DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem value="desc">Descending</DropdownMenuRadioItem>
                         </DropdownMenuRadioGroup>
                     </DropdownMenuContent>
                 </DropdownMenu>
