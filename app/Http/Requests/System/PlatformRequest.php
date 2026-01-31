@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\System;
 
+use App\Enums\PlatformTypeEnum;
 use App\Models\Platform;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -18,7 +19,7 @@ class PlatformRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'website' => ['nullable', 'url', 'max:255'],
-            'type' => ['required', 'string', 'max:50'],
+            'type' => ['required', Rule::enum(PlatformTypeEnum::class)],
             'slug' => [
                 'nullable', 
                 'string', 

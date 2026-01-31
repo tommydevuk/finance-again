@@ -29,6 +29,7 @@ interface Platform {
 
 const props = defineProps<{
     platform: { data: Platform };
+    types: Array<{ label: string; value: string }>;
 }>();
 
 const form = useForm({
@@ -93,12 +94,9 @@ const breadcrumbs = [
                                     v-model="form.type"
                                     class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                 >
-                                    <option value="bank">Bank</option>
-                                    <option value="exchange">Exchange</option>
-                                    <option value="casino">Casino</option>
-                                    <option value="wallet">Wallet</option>
-                                    <option value="payment_processor">Payment Processor</option>
-                                    <option value="other">Other</option>
+                                    <option v-for="type in types" :key="type.value" :value="type.value">
+                                        {{ type.label }}
+                                    </option>
                                 </select>
                             </div>
                             <InputError :message="form.errors.type" />

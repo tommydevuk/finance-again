@@ -26,7 +26,12 @@ class PlatformController extends Controller
 
     public function create()
     {
-        return Inertia::render('System/Platforms/Create');
+        return Inertia::render('System/Platforms/Create', [
+            'types' => collect(\App\Enums\PlatformTypeEnum::cases())->map(fn ($type) => [
+                'value' => $type->value,
+                'label' => $type->label(),
+            ]),
+        ]);
     }
 
     public function store(PlatformRequest $request)
@@ -45,6 +50,10 @@ class PlatformController extends Controller
     {
         return Inertia::render('System/Platforms/Edit', [
             'platform' => new PlatformResource($platform),
+            'types' => collect(\App\Enums\PlatformTypeEnum::cases())->map(fn ($type) => [
+                'value' => $type->value,
+                'label' => $type->label(),
+            ]),
         ]);
     }
 

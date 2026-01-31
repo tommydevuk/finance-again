@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->string('website')->nullable();
-            $table->string('type')->default('bank'); // bank, exchange, casino, wallet, etc.
+            $table->string('type')->default(\App\Enums\PlatformTypeEnum::BANK->value);
             $table->timestamps();
         });
     }
