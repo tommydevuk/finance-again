@@ -15,6 +15,7 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -26,6 +27,7 @@ class UserController extends Controller
         return Inertia::render('System/Users/Index', [
             'users' => UserResource::collection($users),
             'filters' => $request->only(['search', 'sort', 'direction']),
+            'roles' => Role::all(),
         ]);
     }
 

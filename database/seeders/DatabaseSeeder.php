@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -17,26 +18,36 @@ class DatabaseSeeder extends Seeder
             RolesAndPermissionsSeeder::class,
         ]);
 
-        $user1 = User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        $user1 = User::updateOrCreate(
+            ['email' => 'test@example.com'],
+            [
+                'name' => 'Test User',
+                'password' => Hash::make('password123'),
+                'email_verified_at' => now(),
+            ]
+        );
 
-        $user2 = User::factory()->create([
-            'name' => 'Super Admin',
-            'email' => 'admin@example.com',
-        ]);
+        $user2 = User::updateOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'Super Admin',
+                'password' => Hash::make('password123'),
+                'email_verified_at' => now(),
+            ]
+        );
 
         // Create the System Entity
-        $systemEntity = \App\Models\Entity::factory()->create([
-            'name' => 'System',
-            'slug' => 'system',
-            'type' => 'system',
-            'user_id' => $user2->id,
-        ]);
+        $systemEntity = \App\Models\Entity::updateOrCreate(
+            ['slug' => 'system'],
+            [
+                'name' => 'System',
+                'type' => 'system',
+                'user_id' => $user2->id,
+            ]
+        );
 
         // Create Super Admin role scoped to System entity
-        $superAdminRole = \Spatie\Permission\Models\Role::create([
+        $superAdminRole = \Spatie\Permission\Models\Role::firstOrCreate([
             'name' => \App\Enums\RolesEnum::SUPER_ADMIN->value,
             'guard_name' => 'web',
             'entity_id' => $systemEntity->id,

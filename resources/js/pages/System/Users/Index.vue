@@ -39,6 +39,11 @@ interface Props {
     filters: {
         search?: string;
     };
+    roles: Array<{
+        id: number;
+        name: string;
+        guard_name: string;
+    }>;
 }
 
 const props = defineProps<Props>();

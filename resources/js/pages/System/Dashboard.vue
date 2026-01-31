@@ -42,12 +42,12 @@ const breadcrumbs: BreadcrumbItem[] = [
                 </Button>
             </div>
             
-            <div class="grid auto-rows-min gap-4 md:grid-cols-3">
-                <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border p-4 bg-sidebar">
+            <div class="grid auto-rows-min gap-4 md:grid-cols-3 lg:grid-cols-5">
+                <div class="relative overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border p-4 bg-sidebar">
                     <h3 class="font-semibold mb-2">Entities</h3>
                     <div class="text-3xl font-bold">{{ counts.entities }}</div>
                 </div>
-                <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border p-4 bg-sidebar flex flex-col justify-between">
+                <div class="relative overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border p-4 bg-sidebar flex flex-col justify-between">
                      <h3 class="font-semibold mb-2">Users</h3>
                     <div class="flex items-center justify-between">
                         <div class="text-3xl font-bold">{{ counts.users }}</div>
@@ -56,11 +56,11 @@ const breadcrumbs: BreadcrumbItem[] = [
                         </Button>
                     </div>
                 </div>
-                <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border p-4 bg-sidebar">
+                <div class="relative overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border p-4 bg-sidebar">
                      <h3 class="font-semibold mb-2">Transactions</h3>
                     <div class="text-3xl font-bold">{{ counts.transactions }}</div>
                 </div>
-                <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border p-4 bg-sidebar flex flex-col justify-between">
+                <div class="relative overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border p-4 bg-sidebar flex flex-col justify-between">
                      <h3 class="font-semibold mb-2">System Roles</h3>
                     <div class="flex items-center justify-between">
                         <div class="text-3xl font-bold">{{ counts.roles }}</div>
