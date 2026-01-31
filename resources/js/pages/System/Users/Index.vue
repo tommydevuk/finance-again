@@ -1,27 +1,25 @@
 <script setup lang="ts">
-import { Head, Link, router } from '@inertiajs/vue3';
-import { useDebounceFn } from '@vueuse/core';
-import { Search, Plus, FilePen, User as UserIcon, Filter, ArrowUpDown, X } from 'lucide-vue-next';
-import { ref, watch, computed } from 'vue';
+import { Head, Link } from '@inertiajs/vue3';
+import { Plus, FilePen, User as UserIcon, Filter, X } from 'lucide-vue-next';
 import PageHeader from '@/components/PageHeader.vue';
 import Pagination from '@/components/Pagination.vue';
 import ResourceGrid from '@/components/ResourceGrid.vue';
+import DataSearch from '@/components/DataSearch.vue';
+import DataSort from '@/components/DataSort.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
     DropdownMenuRadioGroup,
     DropdownMenuRadioItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { useQueryFilters } from '@/composables/useQueryFilters';
 
 interface User {
     id: number;
@@ -62,41 +60,17 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const search = ref(props.filters.search || '');
-const selectedRole = ref(props.filters.role || '');
-const sort = ref(props.filters.sort || 'created_at');
-const direction = ref(props.filters.direction || 'desc');
+const { search, sort, direction, filters, isFiltered, resetFilters } = useQueryFilters(
+    props.filters,
+    { defaultSort: 'created_at', defaultDirection: 'desc' },
+    '/system/users'
+);
 
-const handleSearch = useDebounceFn(() => {
-    router.get('/system/users', { 
-        search: search.value,
-        role: selectedRole.value,
-        sort: sort.value,
-        direction: direction.value
-    }, {
-        preserveState: true,
-        replace: true,
-    });
-}, 300);
-
-const isFiltered = computed(() => {
-    return search.value !== '' || 
-           selectedRole.value !== '' || 
-           sort.value !== 'created_at' || 
-           direction.value !== 'desc';
-});
-
-const clearFilters = () => {
-    search.value = '';
-    selectedRole.value = '';
-    sort.value = 'created_at';
-    direction.value = 'desc';
-    // Watcher will trigger handleSearch
+const sortOptions = {
+    'Date Created': 'created_at',
+    'Name': 'name',
+    'Email': 'email',
 };
-
-watch([search, selectedRole, sort, direction], () => {
-    handleSearch();
-});
 
 const breadcrumbs = [
     { title: 'System', href: '/system' },
@@ -123,25 +97,19 @@ const breadcrumbs = [
             </PageHeader>
 
             <div class="flex items-center gap-4">
-                <div class="relative flex-1 max-w-sm">
-                    <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        v-model="search"
-                        placeholder="Search users..."
-                        class="pl-8"
-                    />
-                </div>
+                <DataSearch v-model="search" />
+
                 <DropdownMenu>
                     <DropdownMenuTrigger as-child>
                         <Button variant="outline" class="gap-2">
                             <Filter class="h-4 w-4" />
-                            {{ selectedRole ? selectedRole : 'Filter by Role' }}
+                            {{ filters.role ? filters.role : 'Filter by Role' }}
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" class="w-56">
                         <DropdownMenuLabel>Filter by Role</DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuRadioGroup v-model="selectedRole">
+                        <DropdownMenuRadioGroup v-model="filters.role">
                             <DropdownMenuRadioItem value="">
                                 All Roles
                             </DropdownMenuRadioItem>
@@ -152,32 +120,13 @@ const breadcrumbs = [
                     </DropdownMenuContent>
                 </DropdownMenu>
                 
-                <DropdownMenu>
-                    <DropdownMenuTrigger as-child>
-                        <Button variant="outline" class="gap-2">
-                            <ArrowUpDown class="h-4 w-4" />
-                            Sort
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" class="w-48">
-                        <DropdownMenuLabel>Sort By</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuRadioGroup v-model="sort">
-                            <DropdownMenuRadioItem value="created_at">Date Created</DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem value="name">Name</DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem value="email">Email</DropdownMenuRadioItem>
-                        </DropdownMenuRadioGroup>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuLabel>Direction</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuRadioGroup v-model="direction">
-                            <DropdownMenuRadioItem value="asc">Ascending</DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem value="desc">Descending</DropdownMenuRadioItem>
-                        </DropdownMenuRadioGroup>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <DataSort 
+                    v-model:sort="sort" 
+                    v-model:direction="direction" 
+                    :sort-options="sortOptions" 
+                />
 
-                <Button v-if="isFiltered" variant="ghost" size="icon" @click="clearFilters" title="Clear Filters">
+                <Button v-if="isFiltered" variant="ghost" size="icon" @click="resetFilters" title="Clear Filters">
                     <X class="h-4 w-4" />
                 </Button>
             </div>
@@ -190,8 +139,9 @@ const breadcrumbs = [
                 <p class="mb-4 text-sm text-muted-foreground">
                     No users match your search criteria.
                 </p>
-                <Button variant="outline" @click="search = ''">Clear Search</Button>
+                <Button variant="outline" @click="resetFilters">Clear Search</Button>
             </div>
+
 
             <ResourceGrid v-else>
                 <Card v-for="user in users.data" :key="user.id" class="overflow-hidden transition-all hover:border-primary/50">
