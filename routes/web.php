@@ -20,7 +20,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/system', [SystemController::class, 'index'])->name('system.dashboard');
 
     Route::prefix('system')->name('system.')->group(function () {
-        Route::resource('users', \App\Http\Controllers\System\UserController::class);
+        Route::post('users/{user}/impersonate', [\App\Http\Controllers\System\ImpersonationController::class, 'store'])->name('users.impersonate');
+        Route::get('users/{user:uuid}', [\App\Http\Controllers\System\UserController::class, 'show'])->name('users.show');
+        Route::resource('users', \App\Http\Controllers\System\UserController::class)->except(['show']);
         Route::resource('platforms', \App\Http\Controllers\System\PlatformController::class);
         Route::resource('currencies', \App\Http\Controllers\System\CurrencyController::class);
         Route::get('/roles', [App\Http\Controllers\System\RoleController::class, 'index'])->name('roles.index');

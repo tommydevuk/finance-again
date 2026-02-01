@@ -11,6 +11,13 @@ This file tracks all changes made to the project based on user requests.
     - Implemented: Migration includes backfill logic to populate UUIDs/Slugs for existing data, ensuring safety in dev/prod environments.
     - Implemented: Updated `User`, `Entity`, `Account`, `Transaction` models to use `HasUuids` trait.
     - Implemented: Updated `Network` model to include `slug` in fillable attributes.
+- **[Feature: User Management Enhancements]**
+    - Optimized Request: Add context menu to Users index, create View page using UUID, and add Impersonation capability.
+    - Implemented: Added `impersonate user` permission and assigned to Super Admin.
+    - Implemented: Created `ImpersonationController` to handle "Login as User".
+    - Implemented: Updated `System/Users/Index.vue` with Shadcn Dropdown Menu replacing the Edit button.
+    - Implemented: Created `System/Users/Show.vue` view page accessed via UUID (`/system/users/{uuid}`).
+    - Implemented: Added `show` method to `System/UserController` and updated routes.
 
 ### Added
 - Created `CHANGELOG.md` to track project history.

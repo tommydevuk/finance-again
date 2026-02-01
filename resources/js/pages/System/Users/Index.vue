@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
-import { Plus, FilePen, User as UserIcon, Filter, X } from 'lucide-vue-next';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { Plus, FilePen, User as UserIcon, Filter, X, MoreHorizontal, Eye, LogIn } from 'lucide-vue-next';
 import PageHeader from '@/components/PageHeader.vue';
 import Pagination from '@/components/Pagination.vue';
 import ResourceGrid from '@/components/ResourceGrid.vue';
@@ -12,6 +12,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/componen
 import {
     DropdownMenu,
     DropdownMenuContent,
+    DropdownMenuItem,
     DropdownMenuTrigger,
     DropdownMenuRadioGroup,
     DropdownMenuRadioItem,
@@ -23,6 +24,7 @@ import { useQueryFilters } from '@/composables/useQueryFilters';
 
 interface User {
     id: number;
+    uuid: string;
     name: string;
     email: string;
     roles: Array<{ name: string }>;
@@ -56,6 +58,9 @@ interface Props {
         name: string;
         guard_name: string;
     }>;
+    can: {
+        impersonate: boolean;
+    };
 }
 
 const props = defineProps<Props>();
@@ -76,6 +81,12 @@ const breadcrumbs = [
     { title: 'System', href: '/system' },
     { title: 'Users', href: '/system/users' },
 ];
+
+const impersonate = (user: User) => {
+    if (confirm(`Are you sure you want to login as ${user.name}?`)) {
+        router.post(route('system.users.impersonate', user.id));
+    }
+};
 </script>
 
 <template>
@@ -155,6 +166,32 @@ const breadcrumbs = [
                                 <p class="text-xs text-muted-foreground">{{ user.email }}</p>
                             </div>
                         </div>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger as-child>
+                                <Button variant="ghost" size="icon" class="h-8 w-8">
+                                    <MoreHorizontal class="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem as-child>
+                                    <Link :href="route('system.users.show', user.uuid)">
+                                        <Eye class="mr-2 h-4 w-4" />
+                                        View Details
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem as-child>
+                                    <Link :href="route('system.users.edit', user.id)">
+                                        <FilePen class="mr-2 h-4 w-4" />
+                                        Edit User
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator v-if="can.impersonate" />
+                                <DropdownMenuItem v-if="can.impersonate" @click="impersonate(user)" class="text-red-600 focus:text-red-600">
+                                    <LogIn class="mr-2 h-4 w-4" />
+                                    Login as User
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </CardHeader>
                     <CardContent class="pt-4">
                         <div class="flex flex-col gap-3">
@@ -173,14 +210,6 @@ const breadcrumbs = [
                             </div>
                         </div>
                     </CardContent>
-                    <CardFooter class="border-t bg-muted/50 p-3 flex justify-end">
-                        <Button variant="ghost" size="sm" as-child class="h-8 w-full justify-center">
-                            <Link :href="`/system/users/${user.id}/edit`">
-                                <FilePen class="mr-2 h-3.5 w-3.5" />
-                                Edit User
-                            </Link>
-                        </Button>
-                    </CardFooter>
                 </Card>
             </ResourceGrid>
 

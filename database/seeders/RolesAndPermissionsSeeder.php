@@ -34,6 +34,8 @@ class RolesAndPermissionsSeeder extends Seeder
             }
         }
 
+        $permissions[] = 'impersonate user';
+
         // Create Permissions (Global scope for simplicity in seeding, though used with teams later)
         // Note: With 'teams' enabled, permissions usually need a team_id unless global.
         // For Super Admin, we often want Global permissions.

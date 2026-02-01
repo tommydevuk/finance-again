@@ -24,9 +24,22 @@ class UserController extends Controller
         $query = new SystemUserQuery;
         $users = $query->filter($request)->getQuery()->with('allRoles')->paginate(10)->withQueryString();
 
-        return Inertia::render('System/Users/Index', ['users' => UserResource::collection($users),
+        return Inertia::render('System/Users/Index', [
+            'users' => UserResource::collection($users),
             'filters' => $request->only(['search', 'sort', 'direction']),
             'roles' => Role::all(),
+            'can' => [
+                'impersonate' => Gate::allows('impersonate user'),
+            ],
+        ]);
+    }
+
+    public function show(User $user)
+    {
+        Gate::authorize('view', $user);
+
+        return Inertia::render('System/Users/Show', [
+            'user' => new UserResource($user->load('allRoles')),
         ]);
     }
 
