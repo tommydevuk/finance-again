@@ -23,7 +23,7 @@ class UserController extends Controller
                 ->where('model_type', User::class);
         })
         ->with(['roles' => function ($query) use ($entity) {
-            $query->where('entity_id', $entity->id);
+            $query->where(config('permission.table_names.model_has_roles') . '.entity_id', $entity->id);
         }])
         ->when($request->search, function ($query, $search) {
             $query->where(function ($q) use ($search) {
