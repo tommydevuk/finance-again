@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpFoundation\Response;
 
-class RedirectSuperAdmin
+class LoginRoleRedirectMiddleware
 {
     /**
      * Handle an incoming request.

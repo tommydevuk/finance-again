@@ -12,10 +12,10 @@ Route::get('/', function () {
 
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\UserDashboardController;
-use App\Http\Middleware\RedirectSuperAdmin;
+use App\Http\Middleware\LoginRoleRedirectMiddleware;
 
 Route::get('dashboard', UserDashboardController::class)
-    ->middleware(['auth', 'verified', RedirectSuperAdmin::class])
+    ->middleware(['auth', 'verified', LoginRoleRedirectMiddleware::class])
     ->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
