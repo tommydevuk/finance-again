@@ -14,27 +14,22 @@ class EntityPolicy
 
     public function view(User $user, Entity $entity): bool
     {
-        setPermissionsTeamId($entity->id);
-        $user->unsetRelation('roles')->unsetRelation('permissions');
         return $user->hasPermissionTo('view entity');
     }
 
     public function create(User $user): bool
     {
+        // Global check (no team context)
         return $user->hasPermissionTo('create entity');
     }
 
     public function update(User $user, Entity $entity): bool
     {
-        setPermissionsTeamId($entity->id);
-        $user->unsetRelation('roles')->unsetRelation('permissions');
         return $user->hasPermissionTo('update entity');
     }
 
     public function delete(User $user, Entity $entity): bool
     {
-        setPermissionsTeamId($entity->id);
-        $user->unsetRelation('roles')->unsetRelation('permissions');
         return $user->hasPermissionTo('delete entity');
     }
 }

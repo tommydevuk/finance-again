@@ -14,14 +14,19 @@ use App\Http\Controllers\SystemController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Middleware\LoginRoleRedirectMiddleware;
 
+use App\Http\Controllers\TeamController;
+use App\Http\Middleware\SetTeamContext;
+
 Route::get('dashboard', UserDashboardController::class)
     ->middleware(['auth', 'verified', LoginRoleRedirectMiddleware::class])
     ->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('teams/create', [\App\Http\Controllers\TeamController::class, 'create'])->name('teams.create');
-    Route::post('teams', [\App\Http\Controllers\TeamController::class, 'store'])->name('teams.store');
-    Route::get('teams/{entity:uuid}', [\App\Http\Controllers\TeamController::class, 'show'])->name('teams.show');
+    Route::get('teams/create', [TeamController::class, 'create'])->name('teams.create');
+    Route::post('teams', [TeamController::class, 'store'])->name('teams.store');
+    Route::get('teams/{entity:uuid}', [TeamController::class, 'show'])
+        ->middleware(SetTeamContext::class)
+        ->name('teams.show');
 
     Route::get('/system', [SystemController::class, 'index'])->name('system.dashboard');
 

@@ -61,10 +61,7 @@ class TeamController extends Controller
      */
     public function show(Entity $entity): Response
     {
-        // Set the current team/entity context for permission checks
-        setPermissionsTeamId($entity->id);
-
-        // Authorize that the user can view this entity (requires Admin role on this entity)
+        // Authorize that the user can view this entity
         Gate::authorize('view', $entity);
 
         return Inertia::render('Teams/Show', [
