@@ -17,7 +17,7 @@ class UserDashboardController extends Controller
         $user = $request->user();
 
         $entities = \App\Models\Entity::whereIn('id', function ($query) use ($user) {
-            $query->select('entity_id')
+            $query->select(config('permission.table_names.model_has_roles') . '.entity_id')
                 ->from(config('permission.table_names.model_has_roles'))
                 ->where('model_id', $user->id)
                 ->where('model_type', $user->getMorphClass())
