@@ -14,21 +14,22 @@ class EntityPolicy
 
     public function view(User $user, Entity $entity): bool
     {
-        return $user->hasPermissionTo('view entity');
+        return $user->hasPermissionTo('view entity', $entity->id);
     }
 
     public function create(User $user): bool
     {
+        // Creating an entity is a global action (not scoped to an existing entity)
         return $user->hasPermissionTo('create entity');
     }
 
     public function update(User $user, Entity $entity): bool
     {
-        return $user->hasPermissionTo('update entity');
+        return $user->hasPermissionTo('update entity', $entity->id);
     }
 
     public function delete(User $user, Entity $entity): bool
     {
-        return $user->hasPermissionTo('delete entity');
+        return $user->hasPermissionTo('delete entity', $entity->id);
     }
 }
