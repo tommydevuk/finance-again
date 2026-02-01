@@ -4,6 +4,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import EmptyState from '@/components/EmptyState.vue';
+import { Button } from '@/components/ui/button';
 
 defineProps<{
     entities: Array<{
@@ -26,9 +27,14 @@ const breadcrumbs: BreadcrumbItem[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col p-4">
-            <div class="mb-6">
-                <h1 class="text-2xl font-bold tracking-tight">My Teams</h1>
-                <p class="text-muted-foreground">Manage the entities where you have admin access.</p>
+            <div class="mb-6 flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight">My Teams</h1>
+                    <p class="text-muted-foreground">Manage the entities where you have admin access.</p>
+                </div>
+                <Button as-child>
+                    <Link :href="route('teams.create')">Create Team</Link>
+                </Button>
             </div>
 
             <div v-if="entities.length > 0" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
