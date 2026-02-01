@@ -14,6 +14,19 @@ class UserDashboardController extends Controller
      */
     public function __invoke(Request $request): Response
     {
-        return Inertia::render('Users/Dashboard');
+        $user = $request->user();
+
+        $entities = \App\Models\Entity::whereIn('id', function ($query) use ($user) {
+            $query->select('entity_id')
+                ->from(config('permission.table_names.model_has_roles'))
+                ->where('model_id', $user->id)
+                ->where('model_type', $user->getMorphClass())
+                ->join(config('permission.table_names.roles'), 'roles.id', '=', 'model_has_roles.role_id')
+                ->where('roles.name', \App\Enums\RolesEnum::ADMIN->value);
+        })->get();
+
+        return Inertia::render('Users/Dashboard', [
+            'entities' => $entities,
+        ]);
     }
 }

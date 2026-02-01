@@ -19,6 +19,8 @@ Route::get('dashboard', UserDashboardController::class)
     ->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('teams/{entity:uuid}', [\App\Http\Controllers\TeamController::class, 'show'])->name('teams.show');
+
     Route::get('/system', [SystemController::class, 'index'])->name('system.dashboard');
 
     Route::prefix('system')->name('system.')->group(function () {
