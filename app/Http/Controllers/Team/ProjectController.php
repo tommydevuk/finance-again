@@ -25,12 +25,13 @@ class ProjectController extends Controller
             ->where(function ($query) use ($user, $entity) {
                 // 1. Team Admins see all projects
                 $query->whereExists(function ($q) use ($user, $entity) {
+                    $pivotTable = config('permission.table_names.model_has_roles');
                     $q->select(\Illuminate\Support\Facades\DB::raw(1))
-                        ->from(config('permission.table_names.model_has_roles'))
-                        ->join(config('permission.table_names.roles'), 'roles.id', '=', 'model_has_roles.role_id')
+                        ->from($pivotTable)
+                        ->join(config('permission.table_names.roles'), 'roles.id', '=', $pivotTable . '.role_id')
                         ->where('model_id', $user->id)
                         ->where('model_type', $user->getMorphClass())
-                        ->where('entity_id', $entity->id)
+                        ->where($pivotTable . '.entity_id', $entity->id)
                         ->where('roles.name', \App\Enums\RolesEnum::ADMIN->value);
                 })
                 // 2. Others only see projects they are assigned to
