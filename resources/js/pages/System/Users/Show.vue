@@ -70,7 +70,7 @@ const breadcrumbs = [
                             <Badge v-for="role in user.roles" :key="role.name" variant="secondary">
                                 {{ role.name }}
                             </Badge>
-                            <span v-if="user.roles.length === 0" class="text-muted-foreground italic text-sm">No roles assigned</span>
+                            <span v-if="!user.roles || user.roles.length === 0" class="text-muted-foreground italic text-sm">No roles assigned</span>
                         </div>
                     </div>
                 </CardContent>

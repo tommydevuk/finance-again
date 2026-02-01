@@ -15,8 +15,8 @@ defineProps<{
     sortOptions: Record<string, string>; // label -> value
 }>();
 
-const sort = defineModel<string>('sort');
-const direction = defineModel<string>('direction');
+const sortByModel = defineModel<string>('sortBy');
+const directionModel = defineModel<string>('direction');
 </script>
 
 <template>
@@ -30,7 +30,7 @@ const direction = defineModel<string>('direction');
         <DropdownMenuContent align="end" class="w-48">
             <DropdownMenuLabel>Sort By</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuRadioGroup v-model="sort">
+            <DropdownMenuRadioGroup v-model="sortByModel">
                 <DropdownMenuRadioItem 
                     v-for="(value, label) in sortOptions" 
                     :key="value" 
@@ -42,7 +42,7 @@ const direction = defineModel<string>('direction');
             <DropdownMenuSeparator />
             <DropdownMenuLabel>Direction</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuRadioGroup v-model="direction">
+            <DropdownMenuRadioGroup v-model="directionModel">
                 <DropdownMenuRadioItem value="asc">Ascending</DropdownMenuRadioItem>
                 <DropdownMenuRadioItem value="desc">Descending</DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>

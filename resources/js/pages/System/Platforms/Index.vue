@@ -57,7 +57,7 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const { search, sort, direction, filters, isFiltered, resetFilters } = useQueryFilters(
+const { search, sort: currentSort, direction, filters, isFiltered, resetFilters } = useQueryFilters(
     props.filters,
     { defaultSort: 'created_at', defaultDirection: 'desc' },
     '/system/platforms'
@@ -118,7 +118,7 @@ const breadcrumbs = [
                 </DropdownMenu>
 
                 <DataSort 
-                    v-model:sort="sort" 
+                    v-model:sortBy="currentSort" 
                     v-model:direction="direction" 
                     :sort-options="sortOptions" 
                 />

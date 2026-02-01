@@ -13,7 +13,11 @@ export function useQueryFilters(
     routePath: string
 ) {
     const search = ref(initialFilters.search || '');
-    const sort = ref(initialFilters.sort || sortOptions.defaultSort);
+    
+    // safe access to sort, ensuring it's a string and not Array.prototype.sort
+    const rawSort = initialFilters.sort;
+    const sortField = ref((typeof rawSort === 'string' ? rawSort : null) || sortOptions.defaultSort);
+    
     const direction = ref(initialFilters.direction || sortOptions.defaultDirection);
     
     // Dynamic filters (e.g. role, status)
@@ -25,7 +29,7 @@ export function useQueryFilters(
 
     const isFiltered = computed(() => {
         return search.value !== '' || 
-               sort.value !== sortOptions.defaultSort || 
+               sortField.value !== sortOptions.defaultSort || 
                direction.value !== sortOptions.defaultDirection ||
                Object.values(filters.value).some(val => val !== '' && val !== null && val !== undefined);
     });
@@ -33,7 +37,7 @@ export function useQueryFilters(
     const handleSearch = useDebounceFn(() => {
         router.get(routePath, { 
             search: search.value,
-            sort: sort.value,
+            sort: sortField.value,
             direction: direction.value,
             ...filters.value
         }, {
@@ -44,7 +48,7 @@ export function useQueryFilters(
 
     const resetFilters = () => {
         search.value = '';
-        sort.value = sortOptions.defaultSort;
+        sortField.value = sortOptions.defaultSort;
         direction.value = sortOptions.defaultDirection;
         
         // Reset all dynamic filters to empty string or null
@@ -56,13 +60,13 @@ export function useQueryFilters(
     };
 
     // Watch all reactive state
-    watch([search, sort, direction, filters], () => {
+    watch([search, sortField, direction, filters], () => {
         handleSearch();
     }, { deep: true });
 
     return {
         search,
-        sort,
+        sort: sortField,
         direction,
         filters,
         isFiltered,
