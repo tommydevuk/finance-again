@@ -42,13 +42,5 @@ class RolesAndPermissionsSeeder extends Seeder
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
         }
-
-        // Create User role (global) and assign 'create entity' permission
-        $userRole = \Spatie\Permission\Models\Role::firstOrCreate([
-            'name' => \App\Enums\RolesEnum::USER->value,
-            'guard_name' => 'web'
-        ]);
-        
-        $userRole->givePermissionTo('create entity');
     }
 }
