@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
+use App\Http\Resources\ProjectResource;
+
 class ProjectController extends Controller
 {
     /**
@@ -45,7 +47,7 @@ class ProjectController extends Controller
 
         return Inertia::render('Teams/Projects/Index', [
             'entity' => $entity,
-            'projects' => $projects,
+            'projects' => ProjectResource::collection($projects),
             'filters' => $request->only(['search']),
         ]);
     }
