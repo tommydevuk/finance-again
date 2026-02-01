@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Network;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class NetworkSeeder extends Seeder
 {
@@ -72,6 +73,7 @@ class NetworkSeeder extends Seeder
         ];
 
         foreach ($networks as $network) {
+            $network['slug'] = Str::slug($network['name']);
             Network::firstOrCreate(
                 ['code' => $network['code']],
                 $network
