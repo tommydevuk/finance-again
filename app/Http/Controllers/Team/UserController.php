@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
+use App\Http\Resources\UserResource;
+
 class UserController extends Controller
 {
     public function index(Entity $entity, Request $request): Response
@@ -36,7 +38,7 @@ class UserController extends Controller
 
         return Inertia::render('Teams/Users/Index', [
             'entity' => $entity,
-            'users' => $users,
+            'users' => UserResource::collection($users),
             'filters' => $request->only(['search', 'sort', 'direction']),
         ]);
     }

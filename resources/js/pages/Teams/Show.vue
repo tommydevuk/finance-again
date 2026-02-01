@@ -3,7 +3,7 @@ import { Head, Link } from '@inertiajs/vue3';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { dashboard } from '@/routes';
-import { Users, ShieldCheck } from 'lucide-vue-next';
+import { Users, ShieldCheck, LayoutGrid } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 
 const props = defineProps<{
@@ -37,6 +37,12 @@ const breadcrumbs: BreadcrumbItem[] = [
                     <p class="text-muted-foreground">Team Overview and Management</p>
                 </div>
                 <div class="flex gap-3">
+                    <Button variant="outline" as-child class="gap-2">
+                        <Link :href="route('teams.projects.index', entity.uuid)">
+                            <LayoutGrid class="h-4 w-4" />
+                            Manage Projects
+                        </Link>
+                    </Button>
                     <Button variant="outline" as-child class="gap-2">
                         <Link :href="route('teams.users.index', entity.uuid)">
                             <Users class="h-4 w-4" />

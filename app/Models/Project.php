@@ -6,17 +6,16 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class Entity extends Model
+class Project extends Model
 {
     use HasFactory, HasUuids;
 
     protected $fillable = [
-        'user_id',
+        'entity_id',
         'name',
-        'slug',
-        'type',
+        'description',
     ];
 
     /**
@@ -29,18 +28,21 @@ class Entity extends Model
         return ['uuid'];
     }
 
-    public function owner(): BelongsTo
+    /**
+     * The team this project belongs to.
+     */
+    public function entity(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(Entity::class);
     }
 
-    public function accounts(): HasMany
+    /**
+     * Users explicitly assigned to this project.
+     */
+    public function users(): BelongsToMany
     {
-        return $this->hasMany(Account::class);
-    }
-
-    public function projects(): HasMany
-    {
-        return $this->hasMany(Project::class);
+        return $this->belongsToMany(User::class)
+            ->withPivot('role')
+            ->withTimestamps();
     }
 }

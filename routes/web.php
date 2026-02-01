@@ -34,6 +34,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Users Management
         Route::get('/users', [\App\Http\Controllers\Team\UserController::class, 'index'])->name('users.index');
+
+        // Projects Management
+        Route::get('/projects', [\App\Http\Controllers\Team\ProjectController::class, 'index'])->name('projects.index');
     });
 
     Route::get('/system', [SystemController::class, 'index'])->name('system.dashboard');
