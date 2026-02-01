@@ -8,8 +8,8 @@ use App\Http\Requests\System\PlatformRequest;
 use App\Http\Resources\PlatformResource;
 use App\Models\Platform;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class PlatformController extends Controller
 {
@@ -67,7 +67,7 @@ class PlatformController extends Controller
         if (empty($data['slug'])) {
             $data['slug'] = Str::slug($data['name']);
         }
-        
+
         $platform->update($data);
 
         return redirect()->route('system.platforms.index')->with('success', 'Platform updated successfully.');

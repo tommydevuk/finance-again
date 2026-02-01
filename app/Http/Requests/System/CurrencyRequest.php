@@ -19,10 +19,10 @@ class CurrencyRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'code' => [
-                'required', 
-                'string', 
-                'max:10', 
-                Rule::unique('currencies', 'code')->ignore($this->currency)
+                'required',
+                'string',
+                'max:10',
+                Rule::unique('currencies', 'code')->ignore($this->currency),
             ],
             'symbol' => ['nullable', 'string', 'max:10'],
             'type' => ['required', Rule::enum(CurrencyTypeEnum::class)],

@@ -12,6 +12,7 @@ class Network extends Model
 
     protected $fillable = [
         'name',
+        'slug',
         'code',
         'chain_id',
         'currency_symbol',

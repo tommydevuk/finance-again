@@ -21,10 +21,10 @@ class PlatformRequest extends FormRequest
             'website' => ['nullable', 'url', 'max:255'],
             'type' => ['required', Rule::enum(PlatformTypeEnum::class)],
             'slug' => [
-                'nullable', 
-                'string', 
-                'max:255', 
-                Rule::unique('platforms', 'slug')->ignore($this->platform)
+                'nullable',
+                'string',
+                'max:255',
+                Rule::unique('platforms', 'slug')->ignore($this->platform),
             ],
         ];
     }

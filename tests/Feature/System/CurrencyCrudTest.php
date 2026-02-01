@@ -3,11 +3,11 @@
 use App\Enums\CurrencyTypeEnum;
 use App\Models\Currency;
 use App\Models\User;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
-use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
+use Tests\TestCase;
 
 uses(TestCase::class, RefreshDatabase::class);
 
@@ -19,11 +19,11 @@ test('super admin can manage currencies', function () {
     $adminRole = Role::create(['name' => 'Super Admin', 'guard_name' => 'web', 'entity_id' => $entity->id]);
     $permission = Permission::firstOrCreate(['name' => 'viewAny currency', 'guard_name' => 'web']);
     $adminRole->givePermissionTo($permission);
-    
+
     $adminUser = User::factory()->create(['name' => 'Admin User']);
     $adminUser->assignRole($adminRole);
     $this->actingAs($adminUser);
-    
+
     // Disable CSRF
     $this->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class]);
 
@@ -35,12 +35,12 @@ test('super admin can manage currencies', function () {
         'type' => CurrencyTypeEnum::CRYPTO->value,
         'decimals' => 8,
     ]);
-    
+
     $response->assertRedirect(route('system.currencies.index'));
     $this->assertDatabaseHas('currencies', ['code' => 'BTC']);
-    
+
     $currency = Currency::where('code', 'BTC')->first();
-    
+
     // Test Update
     $response = $this->put(route('system.currencies.update', $currency), [
         'name' => 'Bitcoin Updated',
@@ -49,10 +49,10 @@ test('super admin can manage currencies', function () {
         'type' => CurrencyTypeEnum::CRYPTO->value,
         'decimals' => 8,
     ]);
-    
+
     $response->assertRedirect(route('system.currencies.index'));
     $this->assertDatabaseHas('currencies', ['name' => 'Bitcoin Updated']);
-    
+
     // Test Index
     $this->get(route('system.currencies.index'))
         ->assertOk()
@@ -60,7 +60,7 @@ test('super admin can manage currencies', function () {
             ->component('System/Currencies/Index')
             ->has('currencies.data', 1)
         );
-        
+
     // Test Delete
     $response = $this->delete(route('system.currencies.destroy', $currency));
     $response->assertRedirect(route('system.currencies.index'));
@@ -75,11 +75,11 @@ test('can search and filter currencies', function () {
     $adminRole = Role::create(['name' => 'Super Admin', 'guard_name' => 'web', 'entity_id' => $entity->id]);
     $permission = Permission::firstOrCreate(['name' => 'viewAny currency', 'guard_name' => 'web']);
     $adminRole->givePermissionTo($permission);
-    
+
     $adminUser = User::factory()->create(['name' => 'Admin User']);
     $adminUser->assignRole($adminRole);
     $this->actingAs($adminUser);
-    
+
     // Create currencies
     Currency::create(['name' => 'US Dollar', 'code' => 'USD', 'type' => 'fiat', 'decimals' => 2]);
     Currency::create(['name' => 'Euro', 'code' => 'EUR', 'type' => 'fiat', 'decimals' => 2]);

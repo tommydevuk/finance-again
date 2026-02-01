@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -12,7 +13,17 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, HasRoles, Notifiable, TwoFactorAuthenticatable;
+    use HasFactory, HasRoles, HasUuids, Notifiable, TwoFactorAuthenticatable;
+
+    /**
+     * Get the columns that should receive a unique identifier.
+     *
+     * @return array<int, string>
+     */
+    public function uniqueIds(): array
+    {
+        return ['uuid'];
+    }
 
     /**
      * The attributes that are mass assignable.
@@ -51,9 +62,14 @@ class User extends Authenticatable
         ];
     }
 
-    public function accounts(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function accounts()
     {
-        return $this->belongsToMany(Account::class);
+        return Account::whereIn('entity_id', function ($query) {
+            $query->select(config('permission.column_names.team_foreign_key'))
+                ->from(config('permission.table_names.model_has_roles'))
+                ->where('model_id', $this->getKey())
+                ->where('model_type', $this->getMorphClass());
+        });
     }
 
     public function allRoles(): \Illuminate\Database\Eloquent\Relations\MorphToMany

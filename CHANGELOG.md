@@ -5,6 +5,14 @@ This file tracks all changes made to the project based on user requests.
 ## [Unreleased]
 
 ### Added
+- **[Feature: UUIDs & Slugs]**
+    - Optimized Request: Add UUIDs to core models (`Entity`, `Account`, `User`, `Transaction`) and Slugs to `Network` and `Platform`.
+    - Implemented: Created migration `2026_02_01_175437_add_uuids_and_slugs_to_tables` which adds `uuid` column to specified tables and `slug` to `networks`.
+    - Implemented: Migration includes backfill logic to populate UUIDs/Slugs for existing data, ensuring safety in dev/prod environments.
+    - Implemented: Updated `User`, `Entity`, `Account`, `Transaction` models to use `HasUuids` trait.
+    - Implemented: Updated `Network` model to include `slug` in fillable attributes.
+
+### Added
 - Created `CHANGELOG.md` to track project history.
 - Created `CurrencySeeder` to populate major fiat (USD, EUR, etc.) and crypto (BTC, ETH, etc.) currencies.
 - Created `NetworkSeeder` to populate major blockchain networks (Bitcoin, Ethereum, BSC, etc.).

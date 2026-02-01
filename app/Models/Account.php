@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Account extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuids;
 
     protected $fillable = [
         'entity_id',
@@ -23,14 +23,29 @@ class Account extends Model
         'balance',
     ];
 
+    /**
+     * Get the columns that should receive a unique identifier.
+     *
+     * @return array<int, string>
+     */
+    public function uniqueIds(): array
+    {
+        return ['uuid'];
+    }
+
     public function entity(): BelongsTo
     {
         return $this->belongsTo(Entity::class);
     }
 
-    public function users(): BelongsToMany
+    public function users()
     {
-        return $this->belongsToMany(User::class);
+        return User::whereIn('id', function ($query) {
+            $query->select('model_id')
+                ->from(config('permission.table_names.model_has_roles'))
+                ->where('model_type', (new User)->getMorphClass())
+                ->where(config('permission.column_names.team_foreign_key'), $this->entity_id);
+        });
     }
 
     public function platform(): BelongsTo
