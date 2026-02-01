@@ -11,10 +11,12 @@ Route::get('/', function () {
 })->name('home');
 
 use App\Http\Controllers\SystemController;
+use App\Http\Controllers\UserDashboardController;
+use App\Http\Middleware\RedirectSuperAdmin;
 
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('dashboard', UserDashboardController::class)
+    ->middleware(['auth', 'verified', RedirectSuperAdmin::class])
+    ->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/system', [SystemController::class, 'index'])->name('system.dashboard');

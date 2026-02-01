@@ -23,12 +23,14 @@ const page = usePage();
 const can = computed(() => page.props.auth.can);
 
 const mainNavItems = computed<NavItem[]>(() => {
-    const items: NavItem[] = [
-        {
+    const items: NavItem[] = [];
+
+    if (!can.value?.viewSystemDashboard) {
+        items.push({
             title: 'Dashboard',
             href: dashboard().url,
-        },
-    ];
+        });
+    }
 
     if (can.value?.viewSystemDashboard) {
         items.push({
