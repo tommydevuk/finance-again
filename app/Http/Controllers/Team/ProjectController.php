@@ -12,6 +12,8 @@ use Inertia\Response;
 
 use App\Http\Resources\ProjectResource;
 
+use App\Models\User;
+
 class ProjectController extends Controller
 {
     /**
@@ -50,5 +52,85 @@ class ProjectController extends Controller
             'projects' => ProjectResource::collection($projects),
             'filters' => $request->only(['search']),
         ]);
+    }
+
+    /**
+     * Show the form for creating a new project.
+     */
+    public function create(Entity $entity): Response
+    {
+        Gate::authorize('create', Project::class);
+
+        return Inertia::render('Teams/Projects/Create', [
+            'entity' => $entity,
+        ]);
+    }
+
+    /**
+     * Store a newly created project in storage.
+     */
+    public function store(Entity $entity, Request $request): \Illuminate\Http\RedirectResponse
+    {
+        Gate::authorize('create', Project::class);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:1000',
+        ]);
+
+        $project = $entity->projects()->create($validated);
+
+        // Assign the creator as an 'admin' of the project
+        $project->users()->attach($request->user()->id, ['role' => 'admin']);
+
+        return redirect()->route('teams.projects.index', $entity->uuid)
+            ->with('success', 'Project created successfully.');
+    }
+
+    /**
+     * Show the member management page for a project.
+     */
+    public function editUsers(Entity $entity, Project $project): Response
+    {
+        Gate::authorize('update', $project);
+
+        // Get all users in the team
+        $teamUsers = User::whereIn('id', function ($query) use ($entity) {
+            $query->select('model_id')
+                ->from(config('permission.table_names.model_has_roles'))
+                ->where('entity_id', $entity->id)
+                ->where('model_type', User::class);
+        })->get();
+
+        return Inertia::render('Teams/Projects/ManageUsers', [
+            'entity' => $entity,
+            'project' => $project->load('users'),
+            'teamUsers' => $teamUsers,
+            'availableRoles' => ['member', 'editor', 'admin'],
+        ]);
+    }
+
+    /**
+     * Update project user assignments.
+     */
+    public function updateUsers(Entity $entity, Project $project, Request $request): \Illuminate\Http\RedirectResponse
+    {
+        Gate::authorize('update', $project);
+
+        $validated = $request->validate([
+            'users' => 'array',
+            'users.*.id' => 'exists:users,id',
+            'users.*.role' => 'required|string|in:member,editor,admin',
+        ]);
+
+        $syncData = [];
+        foreach ($validated['users'] as $userData) {
+            $syncData[$userData['id']] = ['role' => $userData['role']];
+        }
+
+        $project->users()->sync($syncData);
+
+        return redirect()->route('teams.projects.index', $entity->uuid)
+            ->with('success', 'Project members updated successfully.');
     }
 }

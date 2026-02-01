@@ -37,6 +37,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Projects Management
         Route::get('/projects', [\App\Http\Controllers\Team\ProjectController::class, 'index'])->name('projects.index');
+        Route::get('/projects/create', [\App\Http\Controllers\Team\ProjectController::class, 'create'])->name('projects.create');
+        Route::post('/projects', [\App\Http\Controllers\Team\ProjectController::class, 'store'])->name('projects.store');
+        Route::get('/projects/{project:uuid}/users', [\App\Http\Controllers\Team\ProjectController::class, 'editUsers'])->name('projects.users.edit');
+        Route::put('/projects/{project:uuid}/users', [\App\Http\Controllers\Team\ProjectController::class, 'updateUsers'])->name('projects.users.update');
     });
 
     Route::get('/system', [SystemController::class, 'index'])->name('system.dashboard');

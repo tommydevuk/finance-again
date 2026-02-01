@@ -68,11 +68,12 @@ class ProjectPolicy
      */
     protected function isTeamAdmin(User $user, int $entityId): bool
     {
-        return DB::table(config('permission.table_names.model_has_roles'))
-            ->join(config('permission.table_names.roles'), 'roles.id', '=', 'model_has_roles.role_id')
+        $pivotTable = config('permission.table_names.model_has_roles');
+        return DB::table($pivotTable)
+            ->join(config('permission.table_names.roles'), 'roles.id', '=', $pivotTable . '.role_id')
             ->where('model_id', $user->id)
             ->where('model_type', $user->getMorphClass())
-            ->where('entity_id', $entityId)
+            ->where($pivotTable . '.entity_id', $entityId)
             ->where('roles.name', RolesEnum::ADMIN->value)
             ->exists();
     }

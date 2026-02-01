@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import { LayoutGrid, Users as UsersIcon, X, MoreHorizontal, Eye } from 'lucide-vue-next';
+import { LayoutGrid, Users as UsersIcon, X, MoreHorizontal, Eye, Plus } from 'lucide-vue-next';
 import PageHeader from '@/components/PageHeader.vue';
 import Pagination from '@/components/Pagination.vue';
 import ResourceGrid from '@/components/ResourceGrid.vue';
@@ -65,6 +65,14 @@ const breadcrumbs = [
             <PageHeader>
                 <template #title>{{ entity.name }} Projects</template>
                 <template #description>Manage team projects and user assignments.</template>
+                <template #actions>
+                    <Button as-child>
+                        <Link :href="route('teams.projects.create', entity.uuid)">
+                            <Plus class="mr-2 h-4 w-4" />
+                            Add Project
+                        </Link>
+                    </Button>
+                </template>
             </PageHeader>
 
             <div class="flex items-center gap-4">
@@ -109,6 +117,12 @@ const breadcrumbs = [
                                     <Link :href="route('teams.show', entity.uuid)">
                                         <Eye class="mr-2 h-4 w-4" />
                                         View Details
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem as-child>
+                                    <Link :href="route('teams.projects.users.edit', { entity: entity.uuid, project: project.uuid })">
+                                        <UsersIcon class="mr-2 h-4 w-4" />
+                                        Manage Members
                                     </Link>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
