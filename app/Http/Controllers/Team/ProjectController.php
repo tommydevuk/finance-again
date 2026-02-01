@@ -83,6 +83,16 @@ class ProjectController extends Controller
         // Assign the creator as an 'admin' of the project
         $project->users()->attach($request->user()->id, ['role' => 'admin']);
 
+        // Log activity against the entity so it shows in the team feed
+        activity()
+            ->performedOn($entity)
+            ->causedBy($request->user())
+            ->withProperties([
+                'project_name' => $project->name,
+                'project_uuid' => $project->uuid
+            ])
+            ->log("created project: {$project->name}");
+
         return redirect()->route('teams.projects.index', $entity->uuid)
             ->with('success', 'Project created successfully.');
     }
@@ -113,24 +123,23 @@ class ProjectController extends Controller
     /**
      * Update project user assignments.
      */
-    public function updateUsers(Entity $entity, Project $project, Request $request): \Illuminate\Http\RedirectResponse
+    /**
+     * Display the specified project.
+     */
+    public function show(Entity $entity, Project $project): Response
     {
-        Gate::authorize('update', $project);
+        Gate::authorize('view', $project);
 
-        $validated = $request->validate([
-            'users' => 'array',
-            'users.*.id' => 'exists:users,id',
-            'users.*.role' => 'required|string|in:member,editor,admin',
+        $activities = \Spatie\Activitylog\Models\Activity::forSubject($project)
+            ->with('causer')
+            ->latest()
+            ->limit(20)
+            ->get();
+
+        return Inertia::render('Teams/Projects/Show', [
+            'entity' => $entity,
+            'project' => $project->load('users'),
+            'activities' => $activities,
         ]);
-
-        $syncData = [];
-        foreach ($validated['users'] as $userData) {
-            $syncData[$userData['id']] = ['role' => $userData['role']];
-        }
-
-        $project->users()->sync($syncData);
-
-        return redirect()->route('teams.projects.index', $entity->uuid)
-            ->with('success', 'Project members updated successfully.');
     }
 }

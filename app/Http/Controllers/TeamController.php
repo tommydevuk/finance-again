@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
+use App\Models\Project;
+
 class TeamController extends Controller
 {
     /**
@@ -59,13 +61,44 @@ class TeamController extends Controller
     /**
      * Show the team dashboard.
      */
-    public function show(Entity $entity): Response
+    public function show(Entity $entity, Request $request): Response
     {
         // Authorize that the user can view this entity
         Gate::authorize('view', $entity);
 
+        $user = $request->user();
+
+        // Fetch projects user has access to in this team
+        $projects = Project::where('entity_id', $entity->id)
+            ->where(function ($query) use ($user, $entity) {
+                // 1. Team Admins see all projects
+                $query->whereExists(function ($q) use ($user, $entity) {
+                    $pivotTable = config('permission.table_names.model_has_roles');
+                    $q->select(\Illuminate\Support\Facades\DB::raw(1))
+                        ->from($pivotTable)
+                        ->join(config('permission.table_names.roles'), 'roles.id', '=', $pivotTable . '.role_id')
+                        ->where('model_id', $user->id)
+                        ->where('model_type', $user->getMorphClass())
+                        ->where($pivotTable . '.entity_id', $entity->id)
+                        ->where('roles.name', \App\Enums\RolesEnum::ADMIN->value);
+                })
+                // 2. Others only see projects they are assigned to
+                ->orWhereHas('users', function ($q) use ($user) {
+                    $q->where('user_id', $user->id);
+                });
+            })
+            ->get();
+
+        $activities = \Spatie\Activitylog\Models\Activity::forSubject($entity)
+            ->with('causer')
+            ->latest()
+            ->limit(20)
+            ->get();
+
         return Inertia::render('Teams/Show', [
             'entity' => $entity,
+            'projects' => $projects,
+            'activities' => $activities,
         ]);
     }
 }

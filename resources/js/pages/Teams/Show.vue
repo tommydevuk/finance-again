@@ -6,13 +6,49 @@ import { dashboard } from '@/routes';
 import { Users, ShieldCheck, LayoutGrid } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+
+interface Project {
+    id: number;
+    uuid: string;
+    name: string;
+    description: string;
+}
+
+interface Activity {
+    id: number;
+    description: string;
+    event: string;
+    created_at: string;
+    causer?: {
+        name: string;
+    };
+    properties: Record<string, any>;
+}
+
 const props = defineProps<{
     entity: {
         id: number;
         uuid: string;
         name: string;
     };
+    projects: Project[];
+    activities: Activity[];
 }>();
+
+const formatActivity = (activity: Activity) => {
+    const user = activity.causer?.name || 'System';
+    
+    switch (activity.event) {
+        case 'created':
+            return `${user} created the team`;
+        case 'updated':
+            const keys = Object.keys(activity.properties?.attributes || {});
+            return `${user} updated ${keys.join(', ')}`;
+        default:
+            return `${user} ${activity.description}`;
+    }
+};
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -72,6 +108,65 @@ const breadcrumbs: BreadcrumbItem[] = [
                     <div class="text-2xl font-bold">0</div>
                 </div>
             </div>
+
+            <div class="grid gap-8 md:grid-cols-3">
+                <div class="md:col-span-2 space-y-8">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-xl font-semibold tracking-tight">Active Projects</h2>
+                            <Link :href="route('teams.projects.index', entity.uuid)" class="text-sm text-primary hover:underline">View all projects</Link>
+                        </div>
+
+                        <div v-if="projects.length > 0" class="grid gap-4 sm:grid-cols-2">
+                            <Link 
+                                v-for="project in projects" 
+                                :key="project.id" 
+                                :href="route('teams.projects.show', { entity: entity.uuid, project: project.uuid })"
+                                class="block p-5 rounded-xl border bg-card hover:bg-accent transition-colors"
+                            >
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div class="bg-primary/10 p-2 rounded-lg text-primary">
+                                        <LayoutGrid class="h-4 w-4" />
+                                    </div>
+                                    <h3 class="font-medium">{{ project.name }}</h3>
+                                </div>
+                                <p class="text-sm text-muted-foreground line-clamp-2">
+                                    {{ project.description || 'No description provided.' }}
+                                </p>
+                            </Link>
+                        </div>
+                        <div v-else class="text-center py-12 border-2 border-dashed rounded-xl text-muted-foreground">
+                            No active projects found.
+                        </div>
+                    </div>
+                </div>
+</div>
+                <div class="space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Team Activity</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div v-if="activities.length > 0" class="space-y-6">
+                                <div v-for="activity in activities" :key="activity.id" class="flex gap-4">
+                                    <div class="mt-1 h-2 w-2 rounded-full bg-primary shrink-0" />
+                                    <div class="space-y-1">
+                                        <p class="text-sm font-medium leading-none">
+                                            {{ formatActivity(activity) }}
+                                        </p>
+                                        <p class="text-xs text-muted-foreground">
+                                            {{ new Date(activity.created_at).toLocaleString() }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-else class="text-sm text-muted-foreground py-8 text-center border-2 border-dashed rounded-lg">
+                                No activity recorded yet.
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            
         </div>
     </AppLayout>
 </template>
