@@ -24,9 +24,17 @@ Route::get('dashboard', UserDashboardController::class)
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('teams/create', [TeamController::class, 'create'])->name('teams.create');
     Route::post('teams', [TeamController::class, 'store'])->name('teams.store');
-    Route::get('teams/{entity:uuid}', [TeamController::class, 'show'])
-        ->middleware(SetTeamContext::class)
-        ->name('teams.show');
+    Route::prefix('teams/{entity:uuid}')->middleware(SetTeamContext::class)->name('teams.')->group(function () {
+        Route::get('/', [TeamController::class, 'show'])->name('show');
+        
+        // Roles Management
+        Route::get('/roles', [\App\Http\Controllers\Team\RoleController::class, 'index'])->name('roles.index');
+        Route::get('/roles/{role}/permissions', [\App\Http\Controllers\Team\RoleController::class, 'editPermissions'])->name('roles.permissions.edit');
+        Route::put('/roles/{role}/permissions', [\App\Http\Controllers\Team\RoleController::class, 'updatePermissions'])->name('roles.permissions.update');
+
+        // Users Management
+        Route::get('/users', [\App\Http\Controllers\Team\UserController::class, 'index'])->name('users.index');
+    });
 
     Route::get('/system', [SystemController::class, 'index'])->name('system.dashboard');
 

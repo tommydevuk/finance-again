@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { dashboard } from '@/routes';
+import { Users, ShieldCheck } from 'lucide-vue-next';
+import { Button } from '@/components/ui/button';
 
 const props = defineProps<{
     entity: {
@@ -19,7 +21,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
     {
         title: props.entity.name,
-        href: '#',
+        href: route('teams.show', props.entity.uuid),
     },
 ];
 </script>
@@ -28,11 +30,25 @@ const breadcrumbs: BreadcrumbItem[] = [
     <Head :title="entity.name" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="p-6 space-y-6">
+        <div class="p-6 space-y-8">
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-3xl font-bold tracking-tight">{{ entity.name }}</h1>
-                    <p class="text-muted-foreground">Team Overview</p>
+                    <p class="text-muted-foreground">Team Overview and Management</p>
+                </div>
+                <div class="flex gap-3">
+                    <Button variant="outline" as-child class="gap-2">
+                        <Link :href="route('teams.users.index', entity.uuid)">
+                            <Users class="h-4 w-4" />
+                            Manage Users
+                        </Link>
+                    </Button>
+                    <Button variant="outline" as-child class="gap-2">
+                        <Link :href="route('teams.roles.index', entity.uuid)">
+                            <ShieldCheck class="h-4 w-4" />
+                            Manage Roles
+                        </Link>
+                    </Button>
                 </div>
             </div>
             
