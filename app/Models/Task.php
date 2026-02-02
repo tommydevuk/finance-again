@@ -6,60 +6,52 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-
-use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
-class Project extends Model
+class Task extends Model
 {
     use HasFactory, HasUuids, LogsActivity;
 
     protected $fillable = [
-        'entity_id',
+        'project_id',
+        'parent_id',
         'name',
         'description',
+        'status',
+        'priority',
+        'sort_order',
     ];
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['name', 'description'])
+            ->logOnly([])
             ->logOnlyDirty()
-            ->useLogName('project');
+            ->useLogName('task');
     }
 
     /**
      * Get the columns that should receive a unique identifier.
-     *
-     * @return array<int, string>
      */
     public function uniqueIds(): array
     {
         return ['uuid'];
     }
 
-    /**
-     * The team this project belongs to.
-     */
-    public function entity(): BelongsTo
+    public function project(): BelongsTo
     {
-        return $this->belongsTo(Entity::class);
+        return $this->belongsTo(Project::class);
     }
 
-    /**
-     * Users explicitly assigned to this project.
-     */
-    public function users(): BelongsToMany
+    public function parent(): BelongsTo
     {
-        return $this->belongsToMany(User::class)
-            ->withPivot('role')
-            ->withTimestamps();
+        return $this->belongsTo(Task::class, 'parent_id');
     }
 
-    public function tasks(): HasMany
+    public function children(): HasMany
     {
-        return $this->hasMany(Task::class)->orderBy('sort_order');
+        return $this->hasMany(Task::class, 'parent_id')->orderBy('sort_order');
     }
 }

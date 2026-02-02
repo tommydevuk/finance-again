@@ -42,6 +42,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/projects/{project:uuid}', [\App\Http\Controllers\Team\ProjectController::class, 'show'])->name('projects.show');
         Route::get('/projects/{project:uuid}/users', [\App\Http\Controllers\Team\ProjectController::class, 'editUsers'])->name('projects.users.edit');
         Route::put('/projects/{project:uuid}/users', [\App\Http\Controllers\Team\ProjectController::class, 'updateUsers'])->name('projects.users.update');
+
+        // Task Management
+        Route::post('/projects/{project:uuid}/tasks', [\App\Http\Controllers\Team\TaskController::class, 'store'])->name('projects.tasks.store');
+        Route::put('/projects/{project:uuid}/tasks/{task:uuid}', [\App\Http\Controllers\Team\TaskController::class, 'update'])->name('projects.tasks.update');
+        Route::delete('/projects/{project:uuid}/tasks/{task:uuid}', [\App\Http\Controllers\Team\TaskController::class, 'destroy'])->name('projects.tasks.destroy');
+        Route::post('/projects/{project:uuid}/tasks/reorder', [\App\Http\Controllers\Team\TaskController::class, 'reorder'])->name('projects.tasks.reorder');
     });
 
     Route::get('/system', [SystemController::class, 'index'])->name('system.dashboard');

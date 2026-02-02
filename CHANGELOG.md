@@ -88,3 +88,14 @@ This file tracks all changes made to the project based on user requests.
 ### Notes
 - Interpreted "major bank transaction types" as a request to ensure major Fiat currencies used in banking are present, alongside major cryptocurrencies.
 - Used generic string fields for `sender_address` and `recipient_address` to support both IBANs/Bank Account numbers and Crypto Wallet addresses.
+- **Fix:** Corrected a bug in the task reordering functionality.
+- **Details:** The  and  functions in  were referencing an incorrect route name ( and  instead of  and ). This caused a Ziggy error, preventing tasks from being reordered or deleted. The route names have been updated to reflect the correct naming convention, and the issue is now resolved.
+
+- **Fix:** Corrected a bug in the task reordering functionality.
+- **Details:** The `onReorder` and `deleteTask` functions in `Show.vue` were referencing an incorrect route name (`projects.tasks.reorder` and `projects.tasks.destroy` instead of `teams.projects.tasks.reorder` and `teams.projects.tasks.destroy`). This caused a Ziggy error, preventing tasks from being reordered or deleted. The route names have been updated to reflect the correct naming convention, and the issue is now resolved.
+- **Feature:** Added detailed activity logging for tasks.
+- **Details:** The system now logs activities when a task is created, when its status is updated, or when other details are edited. If a status change and other edits occur in the same update, two separate activity entries are created to provide a clear and granular audit trail. The project activity feed now displays these new activity types with descriptive messages.
+- **Feature:** Implemented markdown-based, linkable activity logs.
+- **Details:** The activity log now uses a custom markdown format to reference entities like tasks and projects. A new Vue component, `ActivityLog.vue`, parses this markdown and generates dynamic, clickable links that open in a new tab. This makes the activity log more interactive and resilient to future route changes. The new system has been implemented across both project and team-level activity feeds.
+- **Fix:** Corrected an error in the activity logging for project creation.
+- **Details:** A `Spatie\Activitylog\ActivityLogger::forSubject does not exist` error was occurring due to an incorrect method call. This has been resolved by replacing the faulty call with two separate activity log entries: one for the project feed and one for the team feed. This ensures the project creation event is correctly logged and displayed in both relevant activity streams.

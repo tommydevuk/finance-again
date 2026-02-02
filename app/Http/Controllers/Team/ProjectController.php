@@ -11,7 +11,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 use App\Http\Resources\ProjectResource;
-
+use App\Http\Resources\TaskResource;
 use App\Models\User;
 
 class ProjectController extends Controller
@@ -83,15 +83,17 @@ class ProjectController extends Controller
         // Assign the creator as an 'admin' of the project
         $project->users()->attach($request->user()->id, ['role' => 'admin']);
 
-        // Log activity against the entity so it shows in the team feed
+        // Log activity for the project feed
+        activity()
+            ->performedOn($project)
+            ->causedBy($request->user())
+            ->log('Created the project');
+
+        // Log activity for the team feed
         activity()
             ->performedOn($entity)
             ->causedBy($request->user())
-            ->withProperties([
-                'project_name' => $project->name,
-                'project_uuid' => $project->uuid
-            ])
-            ->log("created project: {$project->name}");
+            ->log("Created project [project:{$project->uuid}|{$project->name}]");
 
         return redirect()->route('teams.projects.index', $entity->uuid)
             ->with('success', 'Project created successfully.');
@@ -136,10 +138,17 @@ class ProjectController extends Controller
             ->limit(20)
             ->get();
 
+        $tasks = $project->tasks()
+            ->whereNull('parent_id')
+            ->with('children')
+            ->orderBy('sort_order')
+            ->get();
+
         return Inertia::render('Teams/Projects/Show', [
             'entity' => $entity,
             'project' => $project->load('users'),
             'activities' => $activities,
+            'tasks' => TaskResource::collection($tasks),
         ]);
     }
 }
