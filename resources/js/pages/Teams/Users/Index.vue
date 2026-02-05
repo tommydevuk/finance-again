@@ -18,6 +18,7 @@ import {
 import AppLayout from '@/layouts/AppLayout.vue';
 import { useQueryFilters } from '@/composables/useQueryFilters';
 import { dashboard } from '@/routes';
+import UserHoverCard from '@/components/UserHoverCard.vue';
 
 interface User {
     id: number;
@@ -106,15 +107,17 @@ const breadcrumbs = [
             <ResourceGrid v-else>
                 <Card v-for="user in users.data" :key="user.id" class="overflow-hidden transition-all hover:border-primary/50">
                     <CardHeader class="pb-3 border-b flex flex-row items-center justify-between space-y-0">
-                        <div class="flex items-center gap-3">
-                            <div class="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
-                                <span class="text-sm font-medium">{{ user.name.charAt(0) }}</span>
+                        <UserHoverCard :user="user">
+                            <div class="flex items-center gap-3 cursor-pointer">
+                                <div class="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
+                                    <span class="text-sm font-medium">{{ user.name.charAt(0) }}</span>
+                                </div>
+                                <div>
+                                    <CardTitle class="text-base hover:underline">{{ user.name }}</CardTitle>
+                                    <p class="text-xs text-muted-foreground">{{ user.email }}</p>
+                                </div>
                             </div>
-                            <div>
-                                <CardTitle class="text-base">{{ user.name }}</CardTitle>
-                                <p class="text-xs text-muted-foreground">{{ user.email }}</p>
-                            </div>
-                        </div>
+                        </UserHoverCard>
                         <DropdownMenu>
                             <DropdownMenuTrigger as-child>
                                 <Button variant="ghost" size="icon" class="h-8 w-8">
@@ -123,9 +126,9 @@ const breadcrumbs = [
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                                 <DropdownMenuItem as-child>
-                                    <Link :href="route('teams.show', entity.uuid)">
+                                    <Link :href="`/u/${user.uuid}`">
                                         <Eye class="mr-2 h-4 w-4" />
-                                        View Details
+                                        View Profile
                                     </Link>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>

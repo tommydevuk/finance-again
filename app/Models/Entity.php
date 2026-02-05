@@ -54,4 +54,9 @@ class Entity extends Model
     {
         return $this->hasMany(Project::class);
     }
+
+    public function invitations(): HasMany
+    {
+        return $this->hasMany(EntityInvitation::class);
+    }
 }

@@ -4,18 +4,26 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
+
+use App\Http\Controllers\SystemController;
+use App\Http\Controllers\UserDashboardController;
+use App\Http\Controllers\UserProfileController;
+use App\Http\Middleware\LoginRoleRedirectMiddleware;
+
+use App\Http\Controllers\TeamController;
+use App\Http\Middleware\SetTeamContext;
+
+Route::get('invitations/{token}', [\App\Http\Controllers\EntityInvitationController::class, 'accept'])->name('invitations.accept');
+
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canRegister' => Features::enabled(Features::registration()),
     ]);
 })->name('home');
 
-use App\Http\Controllers\SystemController;
-use App\Http\Controllers\UserDashboardController;
-use App\Http\Middleware\LoginRoleRedirectMiddleware;
 
-use App\Http\Controllers\TeamController;
-use App\Http\Middleware\SetTeamContext;
+Route::get('u/{user:uuid}', [UserProfileController::class, 'show'])->name('users.profile');
+
 
 Route::get('dashboard', UserDashboardController::class)
     ->middleware(['auth', 'verified', LoginRoleRedirectMiddleware::class])
@@ -39,6 +47,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/projects', [\App\Http\Controllers\Team\ProjectController::class, 'index'])->name('projects.index');
         Route::get('/projects/create', [\App\Http\Controllers\Team\ProjectController::class, 'create'])->name('projects.create');
         Route::post('/projects', [\App\Http\Controllers\Team\ProjectController::class, 'store'])->name('projects.store');
+        Route::post('/invitations', [\App\Http\Controllers\EntityInvitationController::class, 'store'])->name('invitations.store');
         Route::get('/projects/{project:uuid}', [\App\Http\Controllers\Team\ProjectController::class, 'show'])->name('projects.show');
         Route::get('/projects/{project:uuid}/users', [\App\Http\Controllers\Team\ProjectController::class, 'editUsers'])->name('projects.users.edit');
         Route::put('/projects/{project:uuid}/users', [\App\Http\Controllers\Team\ProjectController::class, 'updateUsers'])->name('projects.users.update');
@@ -52,7 +61,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/system', [SystemController::class, 'index'])->name('system.dashboard');
 
-    Route::prefix('system')->name('system.')->group(function () {
+    Route::name('system.')->group(function () {
         Route::post('users/{user}/impersonate', [\App\Http\Controllers\System\ImpersonationController::class, 'store'])->name('users.impersonate');
         Route::get('users/{user:uuid}', [\App\Http\Controllers\System\UserController::class, 'show'])->name('users.show');
         Route::resource('users', \App\Http\Controllers\System\UserController::class)->except(['show']);

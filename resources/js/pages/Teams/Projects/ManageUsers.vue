@@ -14,9 +14,11 @@ import {
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { ref } from 'vue';
+import UserHoverCard from '@/components/UserHoverCard.vue';
 
 interface User {
     id: number;
+    uuid: string;
     name: string;
     email: string;
     pivot?: {
@@ -70,6 +72,10 @@ const getUserName = (id: number) => {
 
 const getUserEmail = (id: number) => {
     return props.teamUsers.find(u => u.id === id)?.email || '';
+};
+
+const getUser = (id: number): User | undefined => {
+    return props.teamUsers.find(u => u.id === id);
 };
 
 const submit = () => {
@@ -149,7 +155,18 @@ const breadcrumbs: BreadcrumbItem[] = [
                             
                             <div v-for="(userForm, index) in form.users" :key="userForm.id" 
                                 class="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/5 transition-colors">
-                                <div class="flex items-center gap-3">
+                                <UserHoverCard v-if="getUser(userForm.id)" :user="getUser(userForm.id)!">
+                                    <div class="flex items-center gap-3 cursor-pointer">
+                                        <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary font-medium text-xs">
+                                            {{ getUserName(userForm.id).charAt(0) }}
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-medium hover:underline">{{ getUserName(userForm.id) }}</p>
+                                            <p class="text-xs text-muted-foreground">{{ getUserEmail(userForm.id) }}</p>
+                                        </div>
+                                    </div>
+                                </UserHoverCard>
+                                <div v-else class="flex items-center gap-3">
                                     <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary font-medium text-xs">
                                         {{ getUserName(userForm.id).charAt(0) }}
                                     </div>

@@ -11,9 +11,11 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import TaskItem from '@/components/TaskItem.vue';
 import TaskFormSheet from '@/components/TaskFormSheet.vue';
 import ActivityLog from '@/components/ActivityLog.vue';
+import UserHoverCard from '@/components/UserHoverCard.vue';
 
 interface User {
     id: number;
+    uuid: string;
     name: string;
     email: string;
     pivot: {
@@ -229,15 +231,17 @@ const breadcrumbs: BreadcrumbItem[] = [
                         <CardContent>
                             <div class="space-y-4">
                                 <div v-for="user in project.users" :key="user.id" class="flex items-center justify-between">
-                                    <div class="flex items-center gap-3">
-                                        <div class="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
-                                            {{ user.name.charAt(0) }}
+                                    <UserHoverCard :user="user">
+                                        <div class="flex items-center gap-3 cursor-pointer">
+                                            <div class="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
+                                                {{ user.name.charAt(0) }}
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium hover:underline">{{ user.name }}</p>
+                                                <p class="text-xs text-muted-foreground capitalize">{{ user.pivot.role }}</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <p class="text-sm font-medium">{{ user.name }}</p>
-                                            <p class="text-xs text-muted-foreground capitalize">{{ user.pivot.role }}</p>
-                                        </div>
-                                    </div>
+                                    </UserHoverCard>
                                 </div>
                             </div>
                         </CardContent>

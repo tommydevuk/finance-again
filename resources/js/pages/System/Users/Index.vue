@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { useQueryFilters } from '@/composables/useQueryFilters';
+import UserHoverCard from '@/components/UserHoverCard.vue';
 
 interface User {
     id: number;
