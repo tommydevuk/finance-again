@@ -114,7 +114,7 @@ const breadcrumbs = [
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                                 <DropdownMenuItem as-child>
-                                    <Link :href="route('teams.show', entity.uuid)">
+                                    <Link :href="route('teams.projects.show', { entity: entity.uuid, project: project.uuid })">
                                         <Eye class="mr-2 h-4 w-4" />
                                         View Details
                                     </Link>

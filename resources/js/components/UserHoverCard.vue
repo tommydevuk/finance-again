@@ -38,8 +38,8 @@ const { getInitials } = useInitials();
                     <h4 class="text-sm font-semibold truncate">{{ user.name }}</h4>
                     <p class="text-xs text-muted-foreground truncate">{{ user.email }}</p>
                 </div>
-                <Button as-child variant="ghost" size="icon-sm">
-                    <Link :href="`/u/${user.uuid}`">
+                <Button as-child variant="link" size="icon-sm">
+                    <Link :href="`/u/${user.uuid}`" target="_blank">
                         <ExternalLink class="h-4 w-4" />
                         <span class="sr-only">View Profile</span>
                     </Link>
